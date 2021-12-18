@@ -26,7 +26,7 @@ interface Props {
 export const FindBeer = ({ setFocusedTab, ...props }: Props) => {
   const { navigation } = props;
   const { top } = useSafeAreaInsets();
-  const { beers, getBeers } = useBeer();
+  const { beers } = useBeer();
 
   const [term, setTerm] = useState<string>('');
   const [textValue, setTextValue] = useState<string>('');
@@ -59,7 +59,7 @@ export const FindBeer = ({ setFocusedTab, ...props }: Props) => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'rgba(221, 204, 157, 0.3)' }}>
+    <View style={styles.findBeerContainer}>
       <DrawerToggleButton {...props} />
 
       <View style={{ flex: 1 }}>
@@ -68,36 +68,26 @@ export const FindBeer = ({ setFocusedTab, ...props }: Props) => {
           setTextValue={setTextValue}
           onDebounce={(value) => setTerm(value)}
           style={{
-            position: 'absolute',
-            zIndex: 999,
-            width: screenWidth - 100,
-            top: Platform.OS === 'ios' ? top : top + 25,
-            left: 0,
+            ...styles.searchInput,
+            top: Platform.OS === 'ios'
+              ? top
+              : top + 25,
           }}
         />
         <View style={{ flex: 1 }}>
           {
             term.length > 0 && filteredBeers.length === 0
               ? (
-                <View style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 170,
-                  height: 180,
-                }}>
+                <View style={styles.wrapperNotFound}>
                   <FadeInImage
-                    style={{
-                      resizeMode: 'contain',
-                      width: '100%',
-                      height: '100%',
-                    }}
+                    style={styles.imageNotFound}
                     image={require('../images/not_found.png')}
                   />
-                  <Text style={{ color: 'rgba(0,0,0,0.7)', fontSize: 20, marginTop: 20, fontFamily: 'JosefinRegular' }}>
+                  <Text style={styles.notFoundBeerText}>
                     No hemos encontrado tu birra
                   </Text>
                   <TouchableOpacity onPress={navigateToAddBeer}>
-                    <Text style={{ color: 'rgba(211, 157, 0, 1)', fontSize: 20, marginTop: 20, fontFamily: 'JosefinRegular' }}>
+                    <Text style={styles.addBeerText}>
                       Agrégala!
                     </Text>
                   </TouchableOpacity>
@@ -112,7 +102,11 @@ export const FindBeer = ({ setFocusedTab, ...props }: Props) => {
                   keyExtractor={(beer: any) => beer.name!}
                   showsVerticalScrollIndicator={false}
                   ListHeaderComponent={(
-                    <View style={{ marginTop: Platform.OS === 'ios' ? top + 60 : top + 80, }} />
+                    <View style={{
+                      marginTop: Platform.OS === 'ios'
+                        ? top + 60
+                        : top + 80,
+                    }} />
                   )}
                   renderItem={({ item, index }) => {
                     return <ListItemTopBeer item={item} index={index} top={false} />
@@ -127,5 +121,37 @@ export const FindBeer = ({ setFocusedTab, ...props }: Props) => {
 };
 
 const styles = StyleSheet.create({
-
+  findBeerContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(221, 204, 157, 0.3)',
+  },
+  searchInput: {
+    position: 'absolute',
+    zIndex: 999,
+    width: screenWidth - 100,
+    left: 0,
+  },
+  wrapperNotFound: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 170,
+    height: 180,
+  },
+  imageNotFound: {
+    resizeMode: 'contain',
+    width: '100%',
+    height: '100%',
+  },
+  notFoundBeerText: {
+    color: 'rgba(0,0,0,0.7)',
+    fontSize: 20,
+    marginTop: 20,
+    fontFamily: 'JosefinRegular',
+  },
+  addBeerText: {
+    color: 'rgba(211, 157, 0, 1)',
+    fontSize: 20,
+    marginTop: 20,
+    fontFamily: 'JosefinRegular',
+  },
 });

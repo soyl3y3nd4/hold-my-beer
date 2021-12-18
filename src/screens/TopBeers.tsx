@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { View, FlatList, ActivityIndicator, Image, RefreshControl, Text } from 'react-native'
-import firestore from '@react-native-firebase/firestore';
-import { BeerCollection } from '../interfaces/Beers';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React, { useState } from 'react'
+import { View, FlatList, RefreshControl, Text } from 'react-native';
+import { DrawerContentComponentProps } from '@react-navigation/drawer';
 
 import { ListItemTopBeer } from '../components/ListItemTopBeer';
 import { DrawerToggleButton } from '../components/DrawerToggleButton';
-import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { useBeer } from '../hooks/useBeer';
 
 export const TopBeers = ({ ...props }: DrawerContentComponentProps) => {
