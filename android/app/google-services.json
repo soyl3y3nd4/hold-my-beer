@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "169940075110",
+    "project_id": "hold-my-beer-rn",
+    "storage_bucket": "hold-my-beer-rn.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:169940075110:android:8f0fdbc6ef7cc867fd63a7",
+        "android_client_info": {
+          "package_name": "com.franciscorodriguez.holdmybeer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "169940075110-3tu70jisamo2r13vchsiclpl5qu6l0vk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.franciscorodriguez.holdmybeer",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "169940075110-7sj9mgqhpd6needhpoq012cf91doj81t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDANIZ1nv9qX_hIuC91hQebywGBniboC0g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "169940075110-7sj9mgqhpd6needhpoq012cf91doj81t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
