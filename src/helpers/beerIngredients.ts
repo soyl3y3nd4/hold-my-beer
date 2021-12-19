@@ -80,7 +80,8 @@ export const beer_ingredients = [
 export const beer_types = [
   {
     id: 'ale',
-    name: 'Ale',
+    label: 'Ale',
+    value: 'Ale',
     types: [
       {
         id: 'brown_ale',
@@ -114,7 +115,8 @@ export const beer_types = [
   },
   {
     id: 'lager',
-    name: 'Lager',
+    label: 'Lager',
+    value: 'Lager',
     types: [
       {
         id: 'bock',
@@ -136,7 +138,8 @@ export const beer_types = [
   },
   {
     id: 'hybrid',
-    name: 'Híbridas',
+    label: 'Híbridas',
+    value: 'Híbridas',
     types: [
       {
         id: 'altbier_kosch',
@@ -166,6 +169,7 @@ export const beer_types = [
   },
   {
     id: 'wild',
-    name: 'Salvaje'
+    label: 'Salvaje',
+    value: 'Salvaje'
   },
 ];
