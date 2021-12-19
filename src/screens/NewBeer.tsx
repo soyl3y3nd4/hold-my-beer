@@ -10,8 +10,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { AlertContext } from '../context/alertContext/AlertContext';
 import { DrawerToggleButton } from '../components/DrawerToggleButton';
 import { useForm } from '../hooks/useForm';
-import { beer_types } from '../helpers/beerIngredients';
+import { beer_ingredients, beer_types, specialities } from '../helpers/beerIngredients';
 import { countries } from '../helpers/countries';
+import CustomDropDownPicker from '../components/CustomDropDownPicker';
 // DropDownPicker.setListMode("MODAL");
 // DropDownPicker.setMode("BADGE");
 
@@ -22,10 +23,8 @@ const initialState = {
   short_description: '',
   description: '',
   first_brewed: '',
-  ingredients: '',
   name: '',
   city: '',
-  origin_country: '',
 };
 
 type NewBeerField =
@@ -44,20 +43,22 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
     short_description,
     description,
     first_brewed,
-    ingredients,
     name,
     city,
-    origin_country,
-    onChange
+    onChange,
   } = useForm(initialState);
+
   const [openBeerType, setOpenBeerType] = useState(false);
   const [type, setType] = useState(null);
+
+  const [openSpeciality, setOpenSpeciality] = useState(false);
+  const [speciality, setSpeciality] = useState(null);
 
   const [openCountry, setOpenCountry] = useState(false);
   const [country, setCountry] = useState(null);
 
-  // const [openCountry, setOpenCountry] = useState(false);
-  // const [country, setCountry] = useState(null);
+  const [openIngredients, setOpenIngredients] = useState(false);
+  const [ingredients, setIngredients] = useState(null);
 
   const { showAlert } = useContext(AlertContext);
   const isFocused = useIsFocused();
@@ -121,6 +122,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
 
   };
 
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -154,7 +156,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
           <View style={styles.iconOkContainer}>
             <Icon
               name="checkmark-outline"
-              size={24}
+              size={30}
               color="rgb(0, 160, 18)"
             />
           </View>
@@ -179,181 +181,66 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
           <View style={styles.iconOkContainer}>
             <Icon
               name="checkmark-outline"
-              size={24}
+              size={30}
               color="rgb(0, 160, 18)"
             />
           </View>
         </View>
 
-        {/* Beer Type Input */}
+        {/* Beer Type picker */}
         <View style={styles.inputContainer}>
           <Text style={styles.inputInfo}>
             Tipo cerveza
           </Text>
-          <DropDownPicker
-            listMode="MODAL"
+          <CustomDropDownPicker
             open={openBeerType}
             value={type}
             items={beer_types}
             setOpen={setOpenBeerType}
             setValue={setType}
-            placeholder="Seleccionar tipo"
-            // setItems={setItems}
-            dropDownDirection="TOP"
-            zIndex={2}
-            zIndexInverse={1}
-            style={{
-              borderWidth: 0,
-              zIndex: 9999,
-              backgroundColor: 'rgba(0,0,0,0)',
-              height: 40,
-            }}
-            ArrowDownIconComponent={({ style }) => (
-              <Icon name="chevron-down-outline" size={25} color="rgba(127, 85, 1, 0.5)" style={style} />
-            )}
-            ArrowUpIconComponent={({ style }) => (
-              <Icon name="chevron-up-outline" size={25} color="rgba(127, 85, 1, 0.5)" style={style} />
-            )}
-            CloseIconComponent={({ style }) => (
-              <Icon name="close-outline" size={45} color="rgb(186, 1, 1)" style={style} />
-            )}
-            TickIconComponent={({ style }) => (
-              <Icon name="checkmark-outline" size={27} color="rgb(13, 196, 0)" style={style} />
-            )}
-            arrowIconStyle={{
-              width: 20,
-              height: 20,
-              marginBottom: 20,
-            }}
-            tickIconStyle={{
-              width: 30,
-              height: 30,
-            }}
-            closeIconStyle={{
-              width: 40,
-              height: 40
-            }}
-            labelStyle={{
-              fontFamily: 'JosefinBold',
-              fontSize: 15,
-              color: 'rgb(127, 85, 1)',
-            }}
-            modalProps={{
-              animationType: "slide"
-            }}
-            modalContentContainerStyle={{
-              backgroundColor: 'rgba(255,255,255,1)',
-            }}
-            modalTitle="Seleccionar tipo"
-            modalTitleStyle={{
-              fontFamily: 'JosefinBold',
-              color: 'rgba(0,0,0,0.8)',
-              fontSize: 20,
-            }}
-            listItemLabelStyle={{
-              fontFamily: 'JosefinBold',
-              color: 'rgba(0,0,0,0.4)',
-              fontSize: 18,
-            }}
-            placeholderStyle={{
-              fontSize: 15,
-              paddingVertical: 5,
-              width: '100%',
-              color: 'rgba(127, 85, 1, 0.3)',
-              fontFamily: 'JosefinBold',
-            }}
+            placeholder=""
+            modalTitle="Tipos de cerveza"
           />
-          {/* <View style={styles.iconOkContainer}>
-            <Icon
-              name="checkmark-outline"
-              size={24}
-              color="rgb(0, 160, 18)"
-            />
-          </View> */}
         </View>
 
-        {/* Beer Origin Country input */}
+        {/* Beer Speciality picker */}
+        <View style={{
+          ...styles.inputContainer,
+          backgroundColor: !type ? 'rgba(0,0,0,0.1)' : 'rgb(255, 255, 230)',
+          elevation: !type ? 0 : 5,
+        }}>
+          <Text style={{
+            ...styles.inputInfo,
+            color: !type ? 'rgba(0,0,0,0.1)' : 'rgba(127, 85, 1, 0.5)',
+          }}>
+            Especialidad
+          </Text>
+          <CustomDropDownPicker
+            disabled={!type}
+            open={openSpeciality}
+            value={speciality}
+            items={type ? specialities[type] : []}
+            setOpen={setOpenSpeciality}
+            setValue={setSpeciality}
+            placeholder=""
+            modalTitle="Especialidades de cerveza"
+          />
+        </View>
+
+        {/* Beer Origin Country picker */}
         <View style={styles.inputContainer}>
           <Text style={styles.inputInfo}>
             País de origen
           </Text>
-          <DropDownPicker
-            listMode="MODAL"
+          <CustomDropDownPicker
             open={openCountry}
             value={country}
             items={countries}
             setOpen={setOpenCountry}
             setValue={setCountry}
-            placeholder="Seleccionar tipo"
-            // setItems={setItems}
-            dropDownDirection="TOP"
-            zIndex={2}
-            zIndexInverse={1}
-            style={{
-              borderWidth: 0,
-              zIndex: 9999,
-              backgroundColor: 'rgba(0,0,0,0)',
-              height: 40,
-            }}
-            ArrowDownIconComponent={({ style }) => (
-              <Icon name="chevron-down-outline" size={25} color="rgba(127, 85, 1, 0.5)" style={style} />
-            )}
-            ArrowUpIconComponent={({ style }) => (
-              <Icon name="chevron-up-outline" size={25} color="rgba(127, 85, 1, 0.5)" style={style} />
-            )}
-            CloseIconComponent={({ style }) => (
-              <Icon name="close-outline" size={45} color="rgb(186, 1, 1)" style={style} />
-            )}
-            TickIconComponent={({ style }) => (
-              <Icon name="checkmark-outline" size={27} color="rgb(13, 196, 0)" style={style} />
-            )}
-            arrowIconStyle={{
-              width: 20,
-              height: 20,
-              marginBottom: 20,
-            }}
-            tickIconStyle={{
-              width: 30,
-              height: 30,
-            }}
-            closeIconStyle={{
-              width: 40,
-              height: 40
-            }}
-            labelStyle={{
-              fontFamily: 'JosefinBold',
-              fontSize: 15,
-              color: 'rgb(127, 85, 1)',
-            }}
-            modalProps={{
-              animationType: "slide"
-            }}
-            modalContentContainerStyle={{
-              backgroundColor: 'rgba(255,255,255,1)',
-            }}
+            placeholder=""
+            mode="BADGE"
             modalTitle="Seleccionar país"
-            modalTitleStyle={{
-              fontFamily: 'JosefinBold',
-              color: 'rgba(0,0,0,0.8)',
-              fontSize: 20,
-            }}
-            listItemLabelStyle={{
-              fontFamily: 'JosefinBold',
-              color: 'rgba(0,0,0,0.4)',
-              fontSize: 18,
-            }}
-            placeholderStyle={{
-              fontSize: 15,
-              paddingVertical: 5,
-              width: '100%',
-              color: 'rgba(127, 85, 1, 0.3)',
-              fontFamily: 'JosefinBold',
-            }}
-          // renderListItem={({ item, onPress }) =>
-          //   <TouchableOpacity onPress={(value) => { console.log(value) }}>
-          //     <Text>{item.flag}</Text>
-          //   </TouchableOpacity>
-          // }
           />
         </View>
 
@@ -376,7 +263,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
           <View style={styles.iconOkContainer}>
             <Icon
               name="checkmark-outline"
-              size={24}
+              size={30}
               color="rgb(0, 160, 18)"
             />
           </View>
@@ -401,7 +288,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
           <View style={styles.iconOkContainer}>
             <Icon
               name="checkmark-outline"
-              size={24}
+              size={30}
               color="rgb(0, 160, 18)"
             />
           </View>
@@ -412,26 +299,19 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
           <Text style={styles.inputInfo}>
             Ingredientes
           </Text>
-          <TextInput
-            style={styles.inputField}
-            keyboardType="default"
-            selectionColor="lightgrey"
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoCompleteType="off"
-            onChangeText={(value) => onChangeInput(value, 'ingredients')}
+          <CustomDropDownPicker
+            open={openIngredients}
             value={ingredients}
-            onSubmitEditing={onSubmitForm}
+            items={beer_ingredients}
+            setOpen={setOpenIngredients}
+            setValue={setIngredients}
+            placeholder=""
+            multiple={true}
+            min={1}
+            mode="BADGE"
+            modalTitle="Seleccionar ingredientes"
           />
-          <View style={styles.iconOkContainer}>
-            <Icon
-              name="checkmark-outline"
-              size={24}
-              color="rgb(0, 160, 18)"
-            />
-          </View>
         </View>
-
 
         {/* Short Description Beer input */}
         <View style={styles.inputContainer}>
@@ -439,7 +319,10 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
             Descripción breve
           </Text>
           <TextInput
-            style={styles.inputField}
+            style={{
+              ...styles.inputField,
+              maxHeight: 85,
+            }}
             keyboardType="default"
             selectionColor="lightgrey"
             autoCapitalize="none"
@@ -459,7 +342,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
           >
             <Icon
               name="checkmark-outline"
-              size={24}
+              size={30}
               color="rgb(0, 160, 18)"
             />
           </View>
@@ -474,7 +357,10 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
             Descripción detallada
           </Text>
           <TextInput
-            style={styles.inputField}
+            style={{
+              ...styles.inputField,
+              maxHeight: 170,
+            }}
             keyboardType="default"
             selectionColor="lightgrey"
             autoCapitalize="none"
@@ -485,16 +371,17 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
             onSubmitEditing={onSubmitForm}
             multiline={true}
             numberOfLines={10}
+
           />
           <View
             style={{
               ...styles.iconOkContainer,
-              top: 35,
+              top: 85,
             }}
           >
             <Icon
               name="checkmark-outline"
-              size={24}
+              size={30}
               color="rgb(0, 160, 18)"
             />
           </View>
@@ -521,22 +408,23 @@ const styles = StyleSheet.create({
   inputContainer: {
     borderWidth: 1,
     borderRadius: 5,
-    borderColor: 'rgba(0,0,0,0.2)',
-    backgroundColor: 'rgba(221, 204, 157, 1)',
+    borderColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: 'rgb(255, 255, 230)',
     paddingHorizontal: 10,
     width: width - 30,
-    marginBottom: 10,
+    marginBottom: 13,
     elevation: 5,
     zIndex: 0,
   },
   inputInfo: {
     fontFamily: 'JosefinBold',
     fontSize: 14,
-    color: 'rgba(127, 85, 1, 0.5)',
+    color: 'rgba(211, 157, 0, 0.4)',
   },
   inputField: {
     fontSize: 15,
     paddingVertical: 5,
+    paddingLeft: 10,
     width: '100%',
     color: 'rgb(127, 85, 1)',
     fontFamily: 'JosefinBold',
@@ -545,13 +433,9 @@ const styles = StyleSheet.create({
     height: 28,
     width: 28,
     paddingLeft: 1,
-    backgroundColor: 'rgb(204, 255, 178)',
     borderRadius: 20,
     position: 'absolute',
     right: 14,
-    top: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.05)',
-    elevation: 5,
+    top: 13,
   }
 });

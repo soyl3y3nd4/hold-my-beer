@@ -1,79 +1,88 @@
 export const beer_ingredients = [
   {
     id: 'water',
-    name: 'Agua'
+    label: 'Agua',
+    value: 'Agua',
   },
   {
     id: 'hop',
-    name: 'Lúpulo'
+    label: 'Lúpulo',
+    value: 'Lúpulo',
   },
   {
     id: 'malt',
-    name: 'Malta'
+    label: 'Malta',
+    value: 'Malta',
   },
   {
     id: 'yeast',
-    name: 'Levadura'
+    label: 'Levadura',
+    value: 'Levadura',
   },
   {
     id: 'barley',
-    name: 'Cebada'
+    label: 'Cebada',
+    value: 'Cebada',
   },
   {
     id: 'sorghum',
-    name: 'Sorgo'
+    label: 'Sorgo',
+    value: 'Sorgo',
   },
   {
     id: 'rice',
-    name: 'Arroz'
+    label: 'Arroz',
+    value: 'Arroz',
   },
   {
     id: 'coffee',
-    name: 'Café'
+    label: 'Café',
+    value: 'Café',
   },
   {
     id: 'honey',
-    name: 'Miel'
+    label: 'Miel',
+    value: 'Miel',
   },
   {
     id: 'chili',
-    name: 'Chile'
+    label: 'Chile',
+    value: 'Chile',
   },
   {
     id: 'clove',
-    name: 'Clavo'
+    label: 'Clavo',
+    value: 'Clavo',
   },
   {
     id: 'rosemary',
-    name: 'Romero'
+    label: 'Romero',
+    value: 'Romero',
   },
   {
     id: 'anise',
-    name: 'Anís'
+    label: 'Anís',
+    value: 'Anís',
   },
   {
     id: 'orange_peel',
-    name: 'Piel de Naranja'
+    label: 'Piel de Naranja',
+    value: 'Piel de Naranja',
   },
   {
     id: 'black_pepper',
-    name: 'Pimienta Negra'
-  },
-  {
-    id: 'coffee',
-    name: 'Café'
-  },
-  {
-    id: 'honey',
-    name: 'Miel'
+    label: 'Pimienta Negra',
+    value: 'Pimienta Negra',
   },
   {
     id: 'tequila',
-    name: 'Tequila'
+    label: 'Tequila',
+    value: 'Tequila',
   },
   {
     id: 'gin',
-    name: 'Ginebra'
+    label: 'Ginebra',
+    value: 'Ginebra',
   },
 ];
 
@@ -85,31 +94,38 @@ export const beer_types = [
     types: [
       {
         id: 'brown_ale',
-        name: 'Brown Ale'
+        label: 'Brown Ale',
+        value: 'Brown Ale',
       },
       {
         id: 'trap_abadia',
-        name: 'Trapenses y Abadía'
+        label: 'Trapenses y Abadía',
+        value: 'Trapenses y Abadía',
       },
       {
         id: 'mild_ale',
-        name: 'Mild Ale'
+        label: 'Mild Ale',
+        value: 'Mild Ale',
       },
       {
         id: 'old_ale',
-        name: 'Old Ale'
+        label: 'Old Ale',
+        value: 'Old Ale',
       },
       {
         id: 'ipa',
-        name: 'Indian Pale Ale (IPA)'
+        label: 'Indian Pale Ale (IPA)',
+        value: 'Indian Pale Ale (IPA)',
       },
       {
         id: 'stout',
-        name: 'Stout'
+        label: 'Stout',
+        value: 'Stout',
       },
       {
         id: 'porter',
-        name: 'Porter'
+        label: 'Porter',
+        value: 'Porter',
       },
     ]
   },
@@ -120,19 +136,23 @@ export const beer_types = [
     types: [
       {
         id: 'bock',
-        name: 'Bock'
+        name: 'Bock',
+        value: 'Bock',
       },
       {
         id: 'dark',
-        name: 'Negra'
+        name: 'Negra',
+        value: 'Negra',
       },
       {
         id: 'pale_lager',
-        name: 'Pale Lager'
+        name: 'Pale Lager',
+        value: 'Pale Lager',
       },
       {
         id: 'pilsner',
-        name: 'Pilsner'
+        name: 'Pilsner',
+        value: 'Pilsner',
       },
     ]
   },
@@ -143,27 +163,33 @@ export const beer_types = [
     types: [
       {
         id: 'altbier_kosch',
-        name: 'Altbier y Kölsch'
+        name: 'Altbier y Kölsch',
+        value: 'Altbier y Kölsch',
       },
       {
         id: 'fruits_vegs',
-        name: 'Frutas y Verduras'
+        name: 'Frutas y Verduras',
+        value: 'Frutas y Verduras',
       },
       {
         id: 'herbs_spices',
-        name: 'Hiervas y Especias'
+        name: 'Hiervas y Especias',
+        value: 'Hiervas y Especias',
       },
       {
         id: 'old_wood',
-        name: 'Envejecidas en madera'
+        name: 'Envejecidas en madera',
+        value: 'Envejecidas en madera',
       },
       {
         id: 'old_smoke',
-        name: 'Ahumadas'
+        name: 'Ahumadas',
+        value: 'Ahumadas',
       },
       {
         id: 'champagne',
-        name: 'Champagne'
+        name: 'Champagne',
+        value: 'Champagne',
       },
     ]
   },
@@ -173,3 +199,104 @@ export const beer_types = [
     value: 'Salvaje'
   },
 ];
+
+export const specialities = {
+  'Ale': [
+    {
+      id: 'brown_ale',
+      label: 'Brown Ale',
+      value: 'Brown Ale',
+    },
+    {
+      id: 'trap_abadia',
+      label: 'Trapenses y Abadía',
+      value: 'Trapenses y Abadía',
+    },
+    {
+      id: 'mild_ale',
+      label: 'Mild Ale',
+      value: 'Mild Ale',
+    },
+    {
+      id: 'old_ale',
+      label: 'Old Ale',
+      value: 'Old Ale',
+    },
+    {
+      id: 'ipa',
+      label: 'Indian Pale Ale (IPA)',
+      value: 'Indian Pale Ale (IPA)',
+    },
+    {
+      id: 'stout',
+      label: 'Stout',
+      value: 'Stout',
+    },
+    {
+      id: 'porter',
+      label: 'Porter',
+      value: 'Porter',
+    },
+  ],
+  'Lager': [
+    {
+      id: 'bock',
+      label: 'Bock',
+      value: 'Bock',
+    },
+    {
+      id: 'dark',
+      label: 'Negra',
+      value: 'Negra',
+    },
+    {
+      id: 'pale_lager',
+      label: 'Pale Lager',
+      value: 'Pale Lager',
+    },
+    {
+      id: 'pilsner',
+      label: 'Pilsner',
+      value: 'Pilsner',
+    },
+  ],
+  'Híbridas': [
+    {
+      id: 'altbier_kosch',
+      label: 'Altbier y Kölsch',
+      value: 'Altbier y Kölsch',
+    },
+    {
+      id: 'fruits_vegs',
+      label: 'Frutas y Verduras',
+      value: 'Frutas y Verduras',
+    },
+    {
+      id: 'herbs_spices',
+      label: 'Hiervas y Especias',
+      value: 'Hiervas y Especias',
+    },
+    {
+      id: 'old_wood',
+      label: 'Envejecidas en madera',
+      value: 'Envejecidas en madera',
+    },
+    {
+      id: 'old_smoke',
+      label: 'Ahumadas',
+      value: 'Ahumadas',
+    },
+    {
+      id: 'champagne',
+      label: 'Champagne',
+      value: 'Champagne',
+    },
+  ],
+  'Salvaje': [
+    {
+      id: 'no_speciality',
+      label: 'Sin Especialidad',
+      value: 'Sin Especialidad',
+    },
+  ]
+}
