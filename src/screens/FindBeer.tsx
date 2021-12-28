@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, Dimensions, Platform, FlatList } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, Platform, FlatList, ImageBackground, useWindowDimensions } from 'react-native';
 import { DrawerNavigationState, ParamListBase } from '@react-navigation/core';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
@@ -24,6 +24,8 @@ interface Props {
 };
 
 export const FindBeer = ({ setFocusedTab, ...props }: Props) => {
+  const { height, width } = useWindowDimensions();
+
   const { navigation } = props;
   const { top } = useSafeAreaInsets();
   const { beers } = useBeer();
@@ -59,10 +61,10 @@ export const FindBeer = ({ setFocusedTab, ...props }: Props) => {
   };
 
   return (
-    <View style={styles.findBeerContainer}>
-      <DrawerToggleButton {...props} />
+    <ImageBackground style={{ height, width, alignItems: 'center', flex: 1, }} source={require('../images/bar.jpg')} resizeMode="cover">
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(221, 204, 157, 0.5)', position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, }}>
+        <DrawerToggleButton {...props} />
 
-      <View style={{ flex: 1 }}>
         <SearchInput
           textValue={textValue}
           setTextValue={setTextValue}
@@ -115,8 +117,8 @@ export const FindBeer = ({ setFocusedTab, ...props }: Props) => {
               )
           }
         </View>
-      </View>
-    </View>
+      </View >
+    </ImageBackground>
   );
 };
 
@@ -149,8 +151,8 @@ const styles = StyleSheet.create({
     fontFamily: 'JosefinRegular',
   },
   addBeerText: {
-    color: 'rgba(211, 157, 0, 1)',
-    fontSize: 20,
+    color: 'white',
+    fontSize: 24,
     marginTop: 20,
     fontFamily: 'JosefinRegular',
   },

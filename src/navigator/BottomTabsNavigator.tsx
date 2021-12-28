@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Animated, Easing, View, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { FindBeer } from '../screens/FindBeer';
@@ -9,192 +9,96 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { TopBeers } from '../screens/TopBeers';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 const AnimatedIcon = Animated.createAnimatedComponent(Icon);
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing } from 'react-native-reanimated';
+import { useTabAnimation } from '../hooks/useTabAnimation';
 
 const Tab = createBottomTabNavigator();
 
 const BottomTabsNavigator = ({ ...props }: DrawerContentComponentProps) => {
-  const [focusedTab, setFocusedTab] = useState(0);
-  const mappable = [0, 1, 2, 3];
-
-  const pages = [
-    {
-      name: "Dashboard",
-      component: () => <Dashboard {...props} />,
-      icon: 'home-sharp',
-    },
-    {
-      name: "TopBeers",
-      component: () => <TopBeers {...props} />,
-      icon: 'trending-up',
-    },
-    {
-      name: "FindBeer",
-      component: () => <FindBeer {...props} setFocusedTab={setFocusedTab} />,
-      icon: 'search',
-    },
-    {
-      name: "NewBeer",
-      component: () => <NewBeer {...props} />,
-      icon: 'add-circle',
-    },
-  ];
-
-  const colors = mappable.map((item, index) => {
-    return useState(index === focusedTab
-      ? new Animated.Value(1)
-      : new Animated.Value(0))[0]
-  });
-
-  const iconSizes = mappable.map((item, index) => {
-    return useState(index === focusedTab
-      ? new Animated.Value(40)
-      : new Animated.Value(28))[0]
-  });
-
-  const boxSizes = mappable.map((item, index) => {
-    return useState(index === focusedTab
-      ? new Animated.Value(70)
-      : new Animated.Value(50))[0]
-  });
-
-  const topMargins = mappable.map((item, index) => {
-    return useState(index === focusedTab
-      ? new Animated.Value(-45)
-      : new Animated.Value(-10))[0]
-  });
-
-  const opacities = mappable.map((item, index) => {
-    return useState(index === focusedTab
-      ? new Animated.Value(1)
-      : new Animated.Value(0))[0]
-  });
-
-  const elevations = mappable.map((item, index) => {
-    return useState(index === focusedTab
-      ? new Animated.Value(1)
-      : new Animated.Value(0))[0]
-  });
+  const { boxAnimation, goIdle, moveTop, iconAnimation } = useTabAnimation();
+  const { boxAnimation: boxAnimation1, goIdle: goIdle1, moveTop: moveTop1, iconAnimation: iconAnimation1 } = useTabAnimation();
+  const { boxAnimation: boxAnimation2, goIdle: goIdle2, moveTop: moveTop2, iconAnimation: iconAnimation2 } = useTabAnimation();
+  const { boxAnimation: boxAnimation3, goIdle: goIdle3, moveTop: moveTop3, iconAnimation: iconAnimation3 } = useTabAnimation();
 
   useEffect(() => {
-    colors.forEach((c, index) => {
-      let value = focusedTab === index ? 1 : 0
-      Animated.timing(c, {
-        toValue: value,
-        duration: 200,
-        useNativeDriver: false,
-        easing: Easing.ease,
-      }).start()
-    });
-
-    iconSizes.forEach((s, index) => {
-      let value = focusedTab === index ? 28 : 22
-      Animated.timing(s, {
-        toValue: value,
-        duration: 200,
-        useNativeDriver: false,
-        easing: Easing.ease,
-      }).start()
-    });
-
-    boxSizes.forEach((s, index) => {
-      let value = focusedTab === index ? 50 : 45
-      Animated.timing(s, {
-        toValue: value,
-        duration: 200,
-        useNativeDriver: false,
-        easing: Easing.ease,
-      }).start()
-    });
-
-    topMargins.forEach((s, index) => {
-      let value = focusedTab === index ? -15 : 10
-      Animated.timing(s, {
-        toValue: value,
-        duration: 200,
-        useNativeDriver: false,
-        easing: Easing.ease,
-      }).start()
-    });
-
-    opacities.forEach((s, index) => {
-      let value = focusedTab === index ? 1 : 0.9
-      Animated.timing(s, {
-        toValue: value,
-        duration: 200,
-        useNativeDriver: false,
-        easing: Easing.ease,
-      }).start()
-    });
-
-    elevations.forEach((s, index) => {
-      let value = focusedTab === index ? 3 : 0.5
-      Animated.timing(s, {
-        toValue: value,
-        duration: 200,
-        useNativeDriver: false,
-        easing: Easing.ease,
-      }).start()
-    });
-
-  }, [focusedTab]);
-
-  const bgColorAnimation = (c: any) => c.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["rgb(107,91,91)", "rgba(211, 157, 0, 1)"]
-  });
+    moveTop();
+  }, []);
 
   return (
     <Tab.Navigator
       initialRouteName="Dashboard"
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
           ...styles.bottomBars,
         },
-      }}
+      })}
     >
-      {pages.map((page, index) => (
-        <Tab.Screen
-          key={"tab-" + index}
-          name={page.name}
-          listeners={{
-            tabPress: (e) => {
-              setFocusedTab(index);
-            },
-          }}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <Animated.View style={{
-                backgroundColor: bgColorAnimation(colors[index]),
-                marginTop: topMargins[index],
-                width: boxSizes[index],
-                height: boxSizes[index],
-                opacity: opacities[index],
-                borderRadius: 50,
-                alignItems: "center",
-                justifyContent: 'center',
-                elevation: elevations[index],
-              }}>
-                <Animated.Text
-                  style={{
-                    fontSize: iconSizes[index],
-                  }}>
-                  <AnimatedIcon
-                    name={page.icon}
-                    color={focused ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.6)"}
-                    style={{
-                      fontSize: iconSizes[index],
-                    }}
-                  />
-                </Animated.Text>
-              </Animated.View>
-            )
-          }}
-        >
-          {page.component}
-        </Tab.Screen>)
-      )}
+      <Tab.Screen
+        name="Dashboard"
+        children={() => <Dashboard {...props} />}
+        listeners={{ focus: () => moveTop(), blur: () => goIdle() }}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Animated.View style={[styles.box, boxAnimation]}>
+              <AnimatedIcon
+                name="home"
+                style={[iconAnimation]}
+                color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
+              />
+            </Animated.View>
+          )
+        }}
+      />
+      <Tab.Screen
+        name="TopBeers"
+        children={() => <TopBeers {...props} />}
+        listeners={{ focus: () => moveTop1(), blur: () => goIdle1() }}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Animated.View style={[styles.box, boxAnimation1]}>
+              <AnimatedIcon
+                name="trending-up"
+                style={[iconAnimation1]}
+                color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
+              />
+            </Animated.View>
+          )
+        }}
+      />
+      <Tab.Screen
+        name="FindBeer"
+        children={() => <FindBeer {...props} setFocusedTab={moveTop3} />}
+        listeners={{ focus: () => moveTop2(), blur: () => goIdle2() }}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Animated.View style={[styles.box, boxAnimation2]}>
+              <AnimatedIcon
+                name="search"
+                style={[iconAnimation2]}
+                color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
+              />
+            </Animated.View>
+          )
+        }}
+      />
+      <Tab.Screen
+        name="NewBeer"
+        children={() => <NewBeer {...props} />}
+        listeners={{ focus: () => moveTop3(), blur: () => goIdle3() }}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Animated.View style={[styles.box, boxAnimation3]}>
+              <AnimatedIcon
+                name="add-circle"
+                style={[iconAnimation3]}
+                color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
+              />
+            </Animated.View>
+          )
+        }}
+      />
     </Tab.Navigator>
   );
 };
@@ -207,8 +111,20 @@ const styles = StyleSheet.create({
     right: 20,
     elevation: 0,
     borderTopWidth: 0,
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(0, 0, 0, 0)',
     height: 60,
+    borderRadius: 20,
+  },
+  box: {
+    width: 50,
+    height: 50,
+    backgroundColor: 'rgba(211, 157, 0, 1)',
+    borderRadius: 50,
+    // margin: 100,
+    // padding: 20,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 });
 

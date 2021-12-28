@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { TouchableOpacity, Animated, Dimensions, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { TouchableOpacity, Animated, Dimensions, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View, ImageBackground, useWindowDimensions } from 'react-native';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { useIsFocused } from '@react-navigation/core';
 import firestore from '@react-native-firebase/firestore';
@@ -16,7 +16,8 @@ import CustomDropDownPicker from '../components/CustomDropDownPicker';
 // DropDownPicker.setListMode("MODAL");
 // DropDownPicker.setMode("BADGE");
 
-const width = Dimensions.get('screen').width;
+// const width = Dimensions.get('screen').width;
+// const height = Dimensions.get('screen').height;
 
 const initialState = {
   avb: '',
@@ -47,6 +48,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
     city,
     onChange,
   } = useForm(initialState);
+  const { height, width } = useWindowDimensions();
 
   const [openBeerType, setOpenBeerType] = useState(false);
   const [type, setType] = useState(null);
@@ -124,270 +126,273 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
 
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.mainContainer}
-    >
-      <DrawerToggleButton {...props} />
+    <>
+      <ImageBackground style={{ height, width, alignItems: 'center', flex: 1, }} source={require('../images/add_beer.jpg')} resizeMode="cover">
 
-      <ScrollView style={{ paddingHorizontal: 15 }}>
-        <View style={styles.containerHeader}>
-          <Text style={styles.headerText}>
-            Nueva Cerveza
-          </Text>
-        </View>
+        <DrawerToggleButton {...props} />
+        <ScrollView style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}>
+          <View style={{ paddingHorizontal: 15, flex: 1, width: '100%', backgroundColor: 'rgba(221, 204, 157, 0.2)' }}>
 
-        {/* Beer Name input */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputInfo}>
-            Nombre
-          </Text>
-          <TextInput
-            style={styles.inputField}
-            keyboardType="default"
-            selectionColor="lightgrey"
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoCompleteType="off"
-            onChangeText={(value) => onChangeInput(value, 'name')}
-            value={name}
-            onSubmitEditing={onSubmitForm}
-          />
-          <View style={styles.iconOkContainer}>
-            <Icon
-              name="checkmark-outline"
-              size={30}
-              color="rgb(0, 160, 18)"
-            />
+            <View style={styles.containerHeader}>
+              <Text style={styles.headerText}>
+                Nueva Cerveza
+              </Text>
+            </View>
+
+            {/* Beer Name input */}
+            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+              <Text style={styles.inputInfo}>
+                Nombre
+              </Text>
+              <TextInput
+                style={styles.inputField}
+                keyboardType="default"
+                selectionColor="lightgrey"
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoCompleteType="off"
+                onChangeText={(value) => onChangeInput(value, 'name')}
+                value={name}
+                onSubmitEditing={onSubmitForm}
+              />
+              <View style={styles.iconOkContainer}>
+                <Icon
+                  name="checkmark-outline"
+                  size={30}
+                  color="rgb(0, 160, 18)"
+                />
+              </View>
+            </View>
+
+            {/* Abv Name input */}
+            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+              <Text style={styles.inputInfo}>
+                Graduación Alcohol
+              </Text>
+              <TextInput
+                style={styles.inputField}
+                keyboardType="decimal-pad"
+                selectionColor="lightgrey"
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoCompleteType="off"
+                onChangeText={(value) => onChangeInput(value, 'avb')}
+                value={avb}
+                onSubmitEditing={onSubmitForm}
+              />
+              <View style={styles.iconOkContainer}>
+                <Icon
+                  name="checkmark-outline"
+                  size={30}
+                  color="rgb(0, 160, 18)"
+                />
+              </View>
+            </View>
+
+            {/* Beer Type picker */}
+            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+              <Text style={styles.inputInfo}>
+                Tipo cerveza
+              </Text>
+              <CustomDropDownPicker
+                open={openBeerType}
+                value={type}
+                items={beer_types}
+                setOpen={setOpenBeerType}
+                setValue={setType}
+                placeholder=""
+                modalTitle="Tipos de cerveza"
+              />
+            </View>
+
+            {/* Beer Speciality picker */}
+            <View style={{
+              ...styles.inputContainer,
+              width: width - 30,
+              backgroundColor: !type ? 'rgba(0,0,0,0.1)' : 'rgba(255, 255, 230, 0.9)',
+              elevation: !type ? 0 : 5,
+            }}>
+              <Text style={{
+                ...styles.inputInfo,
+                color: !type ? 'rgba(0,0,0,0.1)' : 'rgba(211, 157, 0, 0.4)',
+              }}>
+                Especialidad
+              </Text>
+              <CustomDropDownPicker
+                disabled={!type}
+                open={openSpeciality}
+                value={speciality}
+                items={type ? specialities[type] : []}
+                setOpen={setOpenSpeciality}
+                setValue={setSpeciality}
+                placeholder=""
+                modalTitle="Especialidades de cerveza"
+              />
+            </View>
+
+            {/* Beer Origin Country picker */}
+            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+              <Text style={styles.inputInfo}>
+                País de origen
+              </Text>
+              <CustomDropDownPicker
+                open={openCountry}
+                value={country}
+                items={countries}
+                setOpen={setOpenCountry}
+                setValue={setCountry}
+                placeholder=""
+                mode="BADGE"
+                modalTitle="Seleccionar país"
+              />
+            </View>
+
+            {/* City Beer input */}
+            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+              <Text style={styles.inputInfo}>
+                Ciudad de origen
+              </Text>
+              <TextInput
+                style={styles.inputField}
+                keyboardType="default"
+                selectionColor="lightgrey"
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoCompleteType="off"
+                onChangeText={(value) => onChangeInput(value, 'city')}
+                value={city}
+                onSubmitEditing={onSubmitForm}
+              />
+              <View style={styles.iconOkContainer}>
+                <Icon
+                  name="checkmark-outline"
+                  size={30}
+                  color="rgb(0, 160, 18)"
+                />
+              </View>
+            </View>
+
+            {/* City Beer input */}
+            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+              <Text style={styles.inputInfo}>
+                Año de primera elaboración
+              </Text>
+              <TextInput
+                style={styles.inputField}
+                keyboardType="number-pad"
+                selectionColor="lightgrey"
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoCompleteType="off"
+                onChangeText={(value) => onChangeInput(value, 'first_brewed')}
+                value={first_brewed}
+                onSubmitEditing={onSubmitForm}
+              />
+              <View style={styles.iconOkContainer}>
+                <Icon
+                  name="checkmark-outline"
+                  size={30}
+                  color="rgb(0, 160, 18)"
+                />
+              </View>
+            </View>
+
+            {/* Ingredients Beer input */}
+            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+              <Text style={styles.inputInfo}>
+                Ingredientes
+              </Text>
+              <CustomDropDownPicker
+                open={openIngredients}
+                value={ingredients}
+                items={beer_ingredients}
+                setOpen={setOpenIngredients}
+                setValue={setIngredients}
+                placeholder=""
+                multiple={true}
+                min={1}
+                mode="BADGE"
+                modalTitle="Seleccionar ingredientes"
+              />
+            </View>
+
+            {/* Short Description Beer input */}
+            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+              <Text style={styles.inputInfo}>
+                Descripción breve
+              </Text>
+              <TextInput
+                style={{
+                  ...styles.inputField,
+                  maxHeight: 85,
+                }}
+                keyboardType="default"
+                selectionColor="lightgrey"
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoCompleteType="off"
+                onChangeText={(value) => onChangeInput(value, 'short_description')}
+                value={short_description}
+                onSubmitEditing={onSubmitForm}
+                multiline={true}
+                numberOfLines={4}
+              />
+              <View
+                style={{
+                  ...styles.iconOkContainer,
+                  top: 35,
+                }}
+              >
+                <Icon
+                  name="checkmark-outline"
+                  size={30}
+                  color="rgb(0, 160, 18)"
+                />
+              </View>
+            </View>
+
+            {/* Description Beer input */}
+            <View style={{
+              ...styles.inputContainer,
+              marginBottom: 100,
+            }}>
+              <Text style={styles.inputInfo}>
+                Descripción detallada
+              </Text>
+              <TextInput
+                style={{
+                  ...styles.inputField,
+                  maxHeight: 170,
+                }}
+                keyboardType="default"
+                selectionColor="lightgrey"
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoCompleteType="off"
+                onChangeText={(value) => onChangeInput(value, 'description')}
+                value={description}
+                onSubmitEditing={onSubmitForm}
+                multiline={true}
+                numberOfLines={10}
+
+              />
+              <View
+                style={{
+                  ...styles.iconOkContainer,
+                  top: 85,
+                }}
+              >
+                <Icon
+                  name="checkmark-outline"
+                  size={30}
+                  color="rgb(0, 160, 18)"
+                />
+              </View>
+            </View>
           </View>
-        </View>
-
-        {/* Abv Name input */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputInfo}>
-            Graduación Alcohol
-          </Text>
-          <TextInput
-            style={styles.inputField}
-            keyboardType="decimal-pad"
-            selectionColor="lightgrey"
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoCompleteType="off"
-            onChangeText={(value) => onChangeInput(value, 'avb')}
-            value={avb}
-            onSubmitEditing={onSubmitForm}
-          />
-          <View style={styles.iconOkContainer}>
-            <Icon
-              name="checkmark-outline"
-              size={30}
-              color="rgb(0, 160, 18)"
-            />
-          </View>
-        </View>
-
-        {/* Beer Type picker */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputInfo}>
-            Tipo cerveza
-          </Text>
-          <CustomDropDownPicker
-            open={openBeerType}
-            value={type}
-            items={beer_types}
-            setOpen={setOpenBeerType}
-            setValue={setType}
-            placeholder=""
-            modalTitle="Tipos de cerveza"
-          />
-        </View>
-
-        {/* Beer Speciality picker */}
-        <View style={{
-          ...styles.inputContainer,
-          backgroundColor: !type ? 'rgba(0,0,0,0.1)' : 'rgb(255, 255, 230)',
-          elevation: !type ? 0 : 5,
-        }}>
-          <Text style={{
-            ...styles.inputInfo,
-            color: !type ? 'rgba(0,0,0,0.1)' : 'rgba(127, 85, 1, 0.5)',
-          }}>
-            Especialidad
-          </Text>
-          <CustomDropDownPicker
-            disabled={!type}
-            open={openSpeciality}
-            value={speciality}
-            items={type ? specialities[type] : []}
-            setOpen={setOpenSpeciality}
-            setValue={setSpeciality}
-            placeholder=""
-            modalTitle="Especialidades de cerveza"
-          />
-        </View>
-
-        {/* Beer Origin Country picker */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputInfo}>
-            País de origen
-          </Text>
-          <CustomDropDownPicker
-            open={openCountry}
-            value={country}
-            items={countries}
-            setOpen={setOpenCountry}
-            setValue={setCountry}
-            placeholder=""
-            mode="BADGE"
-            modalTitle="Seleccionar país"
-          />
-        </View>
-
-        {/* City Beer input */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputInfo}>
-            Ciudad de origen
-          </Text>
-          <TextInput
-            style={styles.inputField}
-            keyboardType="default"
-            selectionColor="lightgrey"
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoCompleteType="off"
-            onChangeText={(value) => onChangeInput(value, 'city')}
-            value={city}
-            onSubmitEditing={onSubmitForm}
-          />
-          <View style={styles.iconOkContainer}>
-            <Icon
-              name="checkmark-outline"
-              size={30}
-              color="rgb(0, 160, 18)"
-            />
-          </View>
-        </View>
-
-        {/* City Beer input */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputInfo}>
-            Año de primera elaboración
-          </Text>
-          <TextInput
-            style={styles.inputField}
-            keyboardType="number-pad"
-            selectionColor="lightgrey"
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoCompleteType="off"
-            onChangeText={(value) => onChangeInput(value, 'first_brewed')}
-            value={first_brewed}
-            onSubmitEditing={onSubmitForm}
-          />
-          <View style={styles.iconOkContainer}>
-            <Icon
-              name="checkmark-outline"
-              size={30}
-              color="rgb(0, 160, 18)"
-            />
-          </View>
-        </View>
-
-        {/* Ingredients Beer input */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputInfo}>
-            Ingredientes
-          </Text>
-          <CustomDropDownPicker
-            open={openIngredients}
-            value={ingredients}
-            items={beer_ingredients}
-            setOpen={setOpenIngredients}
-            setValue={setIngredients}
-            placeholder=""
-            multiple={true}
-            min={1}
-            mode="BADGE"
-            modalTitle="Seleccionar ingredientes"
-          />
-        </View>
-
-        {/* Short Description Beer input */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputInfo}>
-            Descripción breve
-          </Text>
-          <TextInput
-            style={{
-              ...styles.inputField,
-              maxHeight: 85,
-            }}
-            keyboardType="default"
-            selectionColor="lightgrey"
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoCompleteType="off"
-            onChangeText={(value) => onChangeInput(value, 'short_description')}
-            value={short_description}
-            onSubmitEditing={onSubmitForm}
-            multiline={true}
-            numberOfLines={4}
-          />
-          <View
-            style={{
-              ...styles.iconOkContainer,
-              top: 35,
-            }}
-          >
-            <Icon
-              name="checkmark-outline"
-              size={30}
-              color="rgb(0, 160, 18)"
-            />
-          </View>
-        </View>
-
-        {/* Description Beer input */}
-        <View style={{
-          ...styles.inputContainer,
-          marginBottom: 100,
-        }}>
-          <Text style={styles.inputInfo}>
-            Descripción detallada
-          </Text>
-          <TextInput
-            style={{
-              ...styles.inputField,
-              maxHeight: 170,
-            }}
-            keyboardType="default"
-            selectionColor="lightgrey"
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoCompleteType="off"
-            onChangeText={(value) => onChangeInput(value, 'description')}
-            value={description}
-            onSubmitEditing={onSubmitForm}
-            multiline={true}
-            numberOfLines={10}
-
-          />
-          <View
-            style={{
-              ...styles.iconOkContainer,
-              top: 85,
-            }}
-          >
-            <Icon
-              name="checkmark-outline"
-              size={30}
-              color="rgb(0, 160, 18)"
-            />
-          </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </ImageBackground>
+    </>
   );
 };
 
@@ -403,17 +408,17 @@ const styles = StyleSheet.create({
   headerText: {
     fontFamily: 'JosefinBold',
     fontSize: 25,
-    color: 'rgba(104, 77, 0, 1)',
+    color: 'rgba(255, 255, 255, 1)',
   },
   inputContainer: {
     borderWidth: 1,
     borderRadius: 5,
     borderColor: 'rgba(0,0,0,0.05)',
-    backgroundColor: 'rgb(255, 255, 230)',
+    backgroundColor: 'rgba(255, 255, 230, 0.9)',
     paddingHorizontal: 10,
-    width: width - 30,
     marginBottom: 13,
-    elevation: 5,
+    elevation: 3,
+    shadowColor: 'rgba(0,0,0,0.6)',
     zIndex: 0,
   },
   inputInfo: {

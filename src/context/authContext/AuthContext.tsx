@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: any) => {
 
     try {
       await auth().createUserWithEmailAndPassword(email, password);
-      await auth().currentUser?.sendEmailVerification();
+      await auth().currentUser!.sendEmailVerification();
 
       return signUpResp;
 

@@ -10,12 +10,16 @@ export const DrawerToggleButton = ({ navigation }: DrawerContentComponentProps) 
       onPress={() => navigation.toggleDrawer()}
       style={{
         position: 'absolute',
-        top: 15,
+        top: 26,
         right: 15,
         zIndex: 3,
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        borderRadius: 10,
+        height: 32,
+        padding: 0,
       }}
     >
-      <Icon name="menu" size={50} color="rgba(211, 157, 0, 1)" />
+      <Icon name="menu" size={40} color="white" style={{ top: -5, }} />
     </TouchableOpacity>
   );
 };
