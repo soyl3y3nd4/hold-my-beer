@@ -15,6 +15,26 @@ export const beer_ingredients = [
     value: 'Malta',
   },
   {
+    id: 'malt_extract',
+    label: 'Extracto de Malta',
+    value: 'Extracto de Malta',
+  },
+  {
+    id: 'corn',
+    label: 'Maíz',
+    value: 'Maíz',
+  },
+  {
+    id: 'natural_colorant',
+    label: 'Colorante Natural',
+    value: 'Colorante Natural',
+  },
+  {
+    id: 'quimic_colorant',
+    label: 'Colorante Artificial',
+    value: 'Colorante Artificial',
+  },
+  {
     id: 'yeast',
     label: 'Levadura',
     value: 'Levadura',

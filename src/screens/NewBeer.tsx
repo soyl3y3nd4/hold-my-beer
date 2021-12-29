@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { TouchableOpacity, Animated, Dimensions, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View, ImageBackground, useWindowDimensions } from 'react-native';
+import { TouchableOpacity, ScrollView, StyleSheet, Text, TextInput, View, ImageBackground, useWindowDimensions } from 'react-native';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
-import { useIsFocused } from '@react-navigation/core';
+
 import firestore from '@react-native-firebase/firestore';
 
-import DropDownPicker from 'react-native-dropdown-picker';
-import Icon from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { AlertContext } from '../context/alertContext/AlertContext';
 import { DrawerToggleButton } from '../components/DrawerToggleButton';
@@ -13,11 +12,9 @@ import { useForm } from '../hooks/useForm';
 import { beer_ingredients, beer_types, specialities } from '../helpers/beerIngredients';
 import { countries } from '../helpers/countries';
 import CustomDropDownPicker from '../components/CustomDropDownPicker';
-// DropDownPicker.setListMode("MODAL");
-// DropDownPicker.setMode("BADGE");
-
-// const width = Dimensions.get('screen').width;
-// const height = Dimensions.get('screen').height;
+import { beerYears } from '../helpers/years';
+import { useBeer } from '../hooks/useBeer';
+import { useIsFocused } from '@react-navigation/native';
 
 const initialState = {
   avb: '',
@@ -43,10 +40,10 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
     avb,
     short_description,
     description,
-    first_brewed,
     name,
     city,
     onChange,
+    setFormValue
   } = useForm(initialState);
   const { height, width } = useWindowDimensions();
 
@@ -62,74 +59,160 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
   const [openIngredients, setOpenIngredients] = useState(false);
   const [ingredients, setIngredients] = useState(null);
 
+  const [openYears, setOpenYears] = useState(false);
+  const [years, setYears] = useState(null);
+
   const { showAlert } = useContext(AlertContext);
+  const { beers } = useBeer();
+
   const isFocused = useIsFocused();
 
-  // useEffect(() => {
-  //   if (!isFocused) return;
-  //   saveBeer();
-  // }, [isFocused]);
+  useEffect(() => {
+    if (isFocused) return;
+    resetForm();
+  }, [isFocused]);
 
-  // const saveBeer = async () => {
-  //   const ref = await firestore().collection('beers');
-  //   const beer = await ref.doc('A.K.Damm').get();
-  //   if (beer.data()) {
-  //     return showAlert({
-  //       isOpen: true,
-  //       buttonText: 'CLOSE',
-  //       message: 'Beer already exits!',
-  //     });
-  //   } else {
-  //     ref.doc('A.K.Damm').set({
-  //       description: 'A.K.Damm se lanzó en 2001 para celebrar el 125 aniversario y homenajear a nuestro fundador August Kuentzmann Damm: agua, malta de cebada, lúpulo y levadura. Una perfecta combinación del carácter alemán con la suavidad y el refinamiento francés. Resalta su sabor e imagen refinada con una cerveza con cuerpo. Destaca por su envase premium y único. Color caoba claro de reflejos tostados. Espuma ligeramente dorada. Limpia y brillante, con una burbuja densa y delicada. Se realzan los aromas especiados  y penetrantes.Las sensaciones de dulzor y amargor se equilibran con  una buena acidez y la sensación a levadura fresca.Los tostados y la salivación que provocan la dotan de una personalidad delicada y sabrosa.',
-  //       abv: 4.8,
-  //       ingredients: ['agua', 'malta de cebada', 'levadura', 'lúpulo'],
-  //       first_brewed: 2001,
-  //       image_url: 'https://vivonium.es/wp-content/uploads/2020/05/Comprar-Cerveza-AK-DAMM-Barata.jpg',
-  //       name: 'A.K.Damm',
-  //       short_description: 'A.K. Damm es nuestra cerveza 100% malta elaborada únicamente con agua, malta de cebada, lúpulo y levadura.'
-  //     });
-  //   }
-  // };
+  const saveBeer = async () => {
+    console.log('GUARDAR BIRRA')
+    const ref = await firestore().collection('beers');
+    const beer = await ref.doc(name).get();
+
+    if (beer.data()) {
+      return showAlert({
+        isOpen: true,
+        buttonText: 'CERRAR',
+        message: 'Error, esta cerveza ya existe!',
+      });
+    } else {
+      ref.doc(name).set({
+        description,
+        abv: avb,
+        ingredients,
+        first_brewed: years,
+        image_url: '',
+        name,
+        short_description,
+        type,
+        speciality,
+        origin_country: country,
+        city,
+        votes: 0,
+      });
+      console.log('BIRRA GAURADISIMA')
+      resetForm();
+      return showAlert({
+        isOpen: true,
+        buttonText: 'CERRAR',
+        message: 'Cerveza agregada!',
+      });
+    }
+  };
 
   const onSubmitForm = () => {
+    console.log({
+      avb,
+      short_description,
+      description,
+      name,
+      city,
+      type,
+      speciality,
+      country,
+      ingredients,
+      years,
+    });
+    let isValid = true;
 
-    if (avb) {
-
+    if (checkIfBeerExists()) {
+      console.log('Ya existe', name);
+      isValid = false;
     }
-    if (name) {
 
+    if (!name || name.length === 0) {
+      isValid = false;
     }
-    if (city) {
-
+    if (!avb || avb.length === 0) {
+      isValid = false;
     }
-    if (description) {
+    if (!type || type.length === 0) {
+      isValid = false;
+    }
+    if (!speciality || speciality.length === 0) {
+      isValid = false;
+    }
+    if (!country || country.length === 0) {
+      isValid = false;
+    }
+    if (!city || city.length === 0) {
+      isValid = false;
+    }
+    if (!years || years.length === 0) {
+      isValid = false;
+    }
+    if (!ingredients || ingredients.length === 0) {
+      isValid = false;
+    }
 
+    if (isValid) {
+      saveBeer();
+    } else {
+      console.log('NO VALKID')
     }
   };
 
-  const onChangeInput = (value: string, field: NewBeerField) => {
-    const numericRegex = new RegExp(/^\d+(\.\d{1,2})?$/);
+  // const onChange2 = (value: string, field: NewBeerField) => {
+  //   const numericRegex = new RegExp(/^\d+(\.\d{1,2})?$/);
 
-    console.log({ value, field })
-    console.log(numericRegex.test(value))
-    // if (field === 'avb' && numericRegex.test(value)) {
-    //   onChange(value, field);
-    // }
-
-
-    onChange(value, field)
+  //   // console.log({ value, field })
+  //   // console.log(numericRegex.test(value))
+  //   if (field === 'avb' && numericRegex.test(value)) {
+  //     onChange(value, field);
+  //   }
 
 
+  //   onChange(value, field)
 
+
+
+  // };
+
+  const checkIfBeerExists = (): boolean => {
+    let beerNameExists = false;
+
+    beers.map((beer) => {
+      const beerWithoutAccents = beer.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const newBeerWithoutAccents = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+      if (beerWithoutAccents === newBeerWithoutAccents) {
+        beerNameExists = true;
+      }
+    });
+
+    return beerNameExists;
   };
 
+  const resetForm = () => {
+    setType(null);
+    setSpeciality(null);
+    setCountry(null);
+    setIngredients(null);
+    setYears(null);
+    setFormValue(initialState);
+  };
 
   return (
     <>
       <ImageBackground style={{ height, width, alignItems: 'center', flex: 1, }} source={require('../images/add_beer.jpg')} resizeMode="cover">
-
         <DrawerToggleButton {...props} />
+
+        <TouchableOpacity
+          activeOpacity={0.2}
+          onPress={onSubmitForm}
+          style={styles.submit}
+        >
+          <MaterialCommunityIcons size={35} color="rgb(0, 255, 25)" style={{ top: -4, }} name="check" />
+        </TouchableOpacity>
+
         <ScrollView style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}>
           <View style={{ paddingHorizontal: 15, flex: 1, width: '100%', backgroundColor: 'rgba(221, 204, 157, 0.2)' }}>
 
@@ -144,6 +227,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               <Text style={styles.inputInfo}>
                 Nombre
               </Text>
+              <MaterialCommunityIcons style={styles.iconInput} name="tag-text-outline" />
               <TextInput
                 style={styles.inputField}
                 keyboardType="default"
@@ -151,17 +235,16 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoCompleteType="off"
-                onChangeText={(value) => onChangeInput(value, 'name')}
+                onChangeText={(value) => onChange(value, 'name')}
                 value={name}
-                onSubmitEditing={onSubmitForm}
               />
-              <View style={styles.iconOkContainer}>
+              {/* <View style={styles.iconOkContainer}>
                 <Icon
                   name="checkmark-outline"
-                  size={30}
+                  
                   color="rgb(0, 160, 18)"
                 />
-              </View>
+              </View> */}
             </View>
 
             {/* Abv Name input */}
@@ -169,6 +252,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               <Text style={styles.inputInfo}>
                 Graduación Alcohol
               </Text>
+              <MaterialCommunityIcons style={styles.iconInput} name="percent-outline" />
               <TextInput
                 style={styles.inputField}
                 keyboardType="decimal-pad"
@@ -176,17 +260,16 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoCompleteType="off"
-                onChangeText={(value) => onChangeInput(value, 'avb')}
+                onChangeText={(value) => onChange(value, 'avb')}
                 value={avb}
-                onSubmitEditing={onSubmitForm}
               />
-              <View style={styles.iconOkContainer}>
+              {/* <View style={styles.iconOkContainer}>
                 <Icon
                   name="checkmark-outline"
-                  size={30}
+                  
                   color="rgb(0, 160, 18)"
                 />
-              </View>
+              </View> */}
             </View>
 
             {/* Beer Type picker */}
@@ -194,6 +277,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               <Text style={styles.inputInfo}>
                 Tipo cerveza
               </Text>
+              <MaterialCommunityIcons style={styles.iconInput} name="glass-mug-variant" />
               <CustomDropDownPicker
                 open={openBeerType}
                 value={type}
@@ -209,15 +293,16 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
             <View style={{
               ...styles.inputContainer,
               width: width - 30,
-              backgroundColor: !type ? 'rgba(0,0,0,0.1)' : 'rgba(255, 255, 230, 0.9)',
+              backgroundColor: !type ? 'rgba(255,255,255,0.2)' : 'rgba(255, 255, 230, 0.9)',
               elevation: !type ? 0 : 5,
             }}>
               <Text style={{
                 ...styles.inputInfo,
-                color: !type ? 'rgba(0,0,0,0.1)' : 'rgba(211, 157, 0, 0.4)',
+                color: !type ? 'rgba(0,0,0,0.3)' : 'rgba(211, 157, 0, 0.4)',
               }}>
                 Especialidad
               </Text>
+              <MaterialCommunityIcons style={styles.iconInput} name="folder-star-outline" />
               <CustomDropDownPicker
                 disabled={!type}
                 open={openSpeciality}
@@ -235,6 +320,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               <Text style={styles.inputInfo}>
                 País de origen
               </Text>
+              <MaterialCommunityIcons style={styles.iconInput} name="earth" />
               <CustomDropDownPicker
                 open={openCountry}
                 value={country}
@@ -252,6 +338,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               <Text style={styles.inputInfo}>
                 Ciudad de origen
               </Text>
+              <MaterialCommunityIcons style={styles.iconInput} name="city-variant-outline" />
               <TextInput
                 style={styles.inputField}
                 keyboardType="default"
@@ -259,17 +346,16 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoCompleteType="off"
-                onChangeText={(value) => onChangeInput(value, 'city')}
+                onChangeText={(value) => onChange(value, 'city')}
                 value={city}
-                onSubmitEditing={onSubmitForm}
               />
-              <View style={styles.iconOkContainer}>
+              {/* <View style={styles.iconOkContainer}>
                 <Icon
                   name="checkmark-outline"
-                  size={30}
+                  
                   color="rgb(0, 160, 18)"
                 />
-              </View>
+              </View> */}
             </View>
 
             {/* City Beer input */}
@@ -277,24 +363,24 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               <Text style={styles.inputInfo}>
                 Año de primera elaboración
               </Text>
-              <TextInput
-                style={styles.inputField}
-                keyboardType="number-pad"
-                selectionColor="lightgrey"
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoCompleteType="off"
-                onChangeText={(value) => onChangeInput(value, 'first_brewed')}
-                value={first_brewed}
-                onSubmitEditing={onSubmitForm}
+              <MaterialCommunityIcons style={styles.iconInput} name="calendar-range" />
+              <CustomDropDownPicker
+                open={openYears}
+                value={years}
+                items={beerYears}
+                setOpen={setOpenYears}
+                setValue={setYears}
+                placeholder=""
+                modalTitle="Año de primera elaboración"
               />
-              <View style={styles.iconOkContainer}>
+
+              {/* <View style={styles.iconOkContainer}>
                 <Icon
                   name="checkmark-outline"
-                  size={30}
+                  
                   color="rgb(0, 160, 18)"
                 />
-              </View>
+              </View> */}
             </View>
 
             {/* Ingredients Beer input */}
@@ -302,6 +388,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               <Text style={styles.inputInfo}>
                 Ingredientes
               </Text>
+              <MaterialCommunityIcons style={styles.iconInput} name="food-apple-outline" />
               <CustomDropDownPicker
                 open={openIngredients}
                 value={ingredients}
@@ -321,6 +408,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               <Text style={styles.inputInfo}>
                 Descripción breve
               </Text>
+              <MaterialCommunityIcons style={styles.iconInput} name="text-short" />
               <TextInput
                 style={{
                   ...styles.inputField,
@@ -331,13 +419,13 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoCompleteType="off"
-                onChangeText={(value) => onChangeInput(value, 'short_description')}
+                onChangeText={(value) => onChange(value, 'short_description')}
                 value={short_description}
-                onSubmitEditing={onSubmitForm}
                 multiline={true}
+
                 numberOfLines={4}
               />
-              <View
+              {/* <View
                 style={{
                   ...styles.iconOkContainer,
                   top: 35,
@@ -345,20 +433,21 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               >
                 <Icon
                   name="checkmark-outline"
-                  size={30}
+                  
                   color="rgb(0, 160, 18)"
                 />
-              </View>
+              </View> */}
             </View>
 
             {/* Description Beer input */}
             <View style={{
               ...styles.inputContainer,
-              marginBottom: 100,
+              marginBottom: 40,
             }}>
               <Text style={styles.inputInfo}>
                 Descripción detallada
               </Text>
+              <MaterialCommunityIcons style={styles.iconInput} name="text" />
               <TextInput
                 style={{
                   ...styles.inputField,
@@ -369,14 +458,13 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoCompleteType="off"
-                onChangeText={(value) => onChangeInput(value, 'description')}
+                onChangeText={(value) => onChange(value, 'description')}
                 value={description}
-                onSubmitEditing={onSubmitForm}
                 multiline={true}
-                numberOfLines={10}
+                numberOfLines={8}
 
               />
-              <View
+              {/* <View
                 style={{
                   ...styles.iconOkContainer,
                   top: 85,
@@ -384,10 +472,10 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               >
                 <Icon
                   name="checkmark-outline"
-                  size={30}
+                  
                   color="rgb(0, 160, 18)"
                 />
-              </View>
+              </View> */}
             </View>
           </View>
         </ScrollView>
@@ -404,10 +492,12 @@ const styles = StyleSheet.create({
   containerHeader: {
     flexDirection: 'row',
     paddingVertical: 25,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   headerText: {
     fontFamily: 'JosefinBold',
-    fontSize: 25,
+    fontSize: 20,
     color: 'rgba(255, 255, 255, 1)',
   },
   inputContainer: {
@@ -416,15 +506,24 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0,0,0,0.05)',
     backgroundColor: 'rgba(255, 255, 230, 0.9)',
     paddingHorizontal: 10,
+    paddingLeft: 35,
     marginBottom: 13,
     elevation: 3,
     shadowColor: 'rgba(0,0,0,0.6)',
     zIndex: 0,
   },
+  iconInput: {
+    position: 'absolute',
+    left: 14,
+    top: 28,
+    fontSize: 20,
+    color: 'rgba(0,0,0,0.2)'
+  },
   inputInfo: {
     fontFamily: 'JosefinBold',
     fontSize: 14,
-    color: 'rgba(211, 157, 0, 0.4)',
+    left: -20,
+    color: 'rgba(211, 157, 0, 0.6)',
   },
   inputField: {
     fontSize: 15,
@@ -442,5 +541,33 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 14,
     top: 13,
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    top: 50,
+  },
+  button: {
+    alignSelf: 'flex-end',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderWidth: 2,
+    borderColor: 'rgba(0,0,0, 0.02)',
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+    borderRadius: 100,
+  },
+  buttonText: {
+    fontSize: 18,
+    color: 'white',
+    top: -1
+  },
+  submit: {
+    position: 'absolute',
+    top: 26,
+    left: 15,
+    zIndex: 3,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    borderRadius: 10,
+    height: 34,
+    padding: 3,
   }
 });

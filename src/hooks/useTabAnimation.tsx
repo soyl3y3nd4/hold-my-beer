@@ -11,19 +11,25 @@ export const useTabAnimation = () => {
   // creating worklet via useAnimatedStyle, and incorporating the withTiming method
   const boxAnimation = useAnimatedStyle(() => {
     return {
-      marginBottom: withTiming(boxMargin.value, { duration: 250, easing: Easing.bezier(0.5, 0.01, 0, 1), }),
-      opacity: withTiming(opacity.value, { duration: 250, easing: Easing.bezier(0.5, 0.01, 0, 1), }),
-      elevation: withTiming(elevation.value, { duration: 250, easing: Easing.bezier(0.5, 0.01, 0, 1), }),
-      height: withTiming(height.value, { duration: 250, easing: Easing.bezier(0.5, 0.01, 0, 1), }),
-      width: withTiming(width.value, { duration: 250, easing: Easing.bezier(0.5, 0.01, 0, 1), }),
+      marginBottom: withTiming(boxMargin.value, { duration: 250, easing: Easing.bezier(0.175, 0.885, 0.32, 1.275), }),
+      opacity: withTiming(opacity.value, { duration: 2000, easing: Easing.bezier(0.175, 0.885, 0.32, 1.275), }),
+      elevation: withTiming(elevation.value, { duration: 250, easing: Easing.bezier(0.175, 0.885, 0.32, 1.275), }),
+      height: withTiming(height.value, { duration: 250, easing: Easing.bezier(0.175, 0.885, 0.32, 1.275), }),
+      width: withTiming(width.value, { duration: 250, easing: Easing.bezier(0.175, 0.885, 0.32, 1.275), }),
     }
   });
 
   const iconAnimation = useAnimatedStyle(() => {
     return {
-      fontSize: withTiming(fontSize.value, { duration: 250, easing: Easing.bezier(0.5, 0.01, 0, 1), }),
+      fontSize: withTiming(fontSize.value, { duration: 250, easing: Easing.bezier(0.175, 0.885, 0.32, 1.275), }),
     }
   });
+
+  const backgroundColor = useSharedValue(false);
+
+  const backgroundAnimation = useAnimatedStyle(() => ({
+    backgroundColor: backgroundColor.value ? 'rgba(0, 0, 0, 0.6)' : 'rgba(211, 157, 0, 1)',
+  }), []);
 
   const moveTop = () => {
     boxMargin.value = 60;
@@ -32,6 +38,7 @@ export const useTabAnimation = () => {
     height.value = 50;
     width.value = 50;
     fontSize.value = 27;
+    backgroundColor.value = false;
   };
   const goIdle = () => {
     boxMargin.value = 0;
@@ -40,6 +47,7 @@ export const useTabAnimation = () => {
     height.value = 40;
     width.value = 40;
     fontSize.value = 20;
+    backgroundColor.value = true;
   };
 
 
@@ -48,5 +56,6 @@ export const useTabAnimation = () => {
     goIdle,
     boxAnimation,
     iconAnimation,
+    backgroundAnimation,
   };
 };

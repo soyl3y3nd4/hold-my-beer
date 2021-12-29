@@ -5,8 +5,13 @@ import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { ListItemTopBeer } from '../components/ListItemTopBeer';
 import { DrawerToggleButton } from '../components/DrawerToggleButton';
 import { useBeer } from '../hooks/useBeer';
+import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
 
-export const TopBeers = ({ ...props }: DrawerContentComponentProps) => {
+interface Props {
+  navigation: DrawerNavigationHelpers
+};
+
+export const TopBeers = ({ navigation }: Props) => {
   const { beers, getBeers } = useBeer();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { height, width } = useWindowDimensions();
@@ -21,7 +26,7 @@ export const TopBeers = ({ ...props }: DrawerContentComponentProps) => {
 
   return (
     <>
-      <DrawerToggleButton {...props} />
+      <DrawerToggleButton navigation={navigation} />
       <ImageBackground style={{ height, width, alignItems: 'center', flex: 1, }} source={require('../images/bar.jpg')} resizeMode="cover">
         <FlatList
           style={{

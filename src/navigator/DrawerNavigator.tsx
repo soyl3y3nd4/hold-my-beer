@@ -5,6 +5,7 @@ import BottomTabsNavigator from './BottomTabsNavigator';
 import { View, Text, Image, TouchableOpacity, StyleSheet, useWindowDimensions, ImageBackground } from 'react-native';
 import { AuthContext } from '../context/authContext/AuthContext';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { NewBeer } from '../screens/NewBeer';
 
 const Drawer = createDrawerNavigator();
 
@@ -20,6 +21,7 @@ const DrawerNavigator = () => {
     >
       <Drawer.Screen name="BottomTabsNavigator" component={BottomTabsNavigator} />
       <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Drawer.Screen name="NewBeer" component={NewBeer} />
     </Drawer.Navigator>
   );
 };
@@ -92,8 +94,17 @@ const MenuContent = ({ navigation }: DrawerContentComponentProps) => {
             onPress={() => navigation.navigate('BottomTabsNavigator')}
             style={styles.menuButton}
           >
-            <Icon name="home-outline" size={35} color="rgba(0, 0, 0, 0.5)" />
-            <Text style={styles.menuItem}>Inicio</Text>
+            <Icon name="home-outline" size={30} color="rgba(0, 0, 0, 0.5)" />
+            <Text style={styles.menuItem}>Menú Principal</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('NewBeer')}
+            style={styles.menuButton}
+          >
+            <Icon name="beer-outline" size={30} color="rgba(0, 0, 0, 0.5)" />
+            <Text style={styles.menuItem}>Nueva Cerveza</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -101,7 +112,7 @@ const MenuContent = ({ navigation }: DrawerContentComponentProps) => {
             onPress={() => navigation.navigate('ProfileScreen')}
             style={styles.menuButton}
           >
-            <Icon name="person-outline" size={35} color="rgba(0, 0, 0, 0.5)" />
+            <Icon name="person-outline" size={30} color="rgba(0, 0, 0, 0.5)" />
             <Text style={styles.menuItem}>Perfil</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -109,7 +120,7 @@ const MenuContent = ({ navigation }: DrawerContentComponentProps) => {
             onPress={() => navigation.navigate('ProfileScreen')}
             style={styles.menuButton}
           >
-            <Icon name="settings-outline" size={35} color="rgba(0, 0, 0, 0.5)" />
+            <Icon name="settings-outline" size={30} color="rgba(0, 0, 0, 0.5)" />
             <Text style={styles.menuItem}>Ajustes</Text>
           </TouchableOpacity>
         </View>
@@ -122,7 +133,7 @@ const MenuContent = ({ navigation }: DrawerContentComponentProps) => {
               marginBottom: 200,
             }}>
 
-            <Icon name="log-in-outline" size={35} color="rgba(0, 0, 0, 0.5)" />
+            <Icon name="log-in-outline" size={30} color="rgba(0, 0, 0, 0.5)" />
             <Text style={styles.menuItem}>Salir</Text>
           </TouchableOpacity>
 
@@ -209,7 +220,7 @@ export const styles = StyleSheet.create({
   menuItem: {
     fontFamily: 'Readex',
     color: 'rgba(0, 0, 0, 0.5)',
-    fontSize: 18,
+    fontSize: 14,
     letterSpacing: 1.2,
     marginLeft: 20
   },

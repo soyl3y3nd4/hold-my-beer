@@ -11,17 +11,43 @@ import { DrawerContentComponentProps } from '@react-navigation/drawer';
 const AnimatedIcon = Animated.createAnimatedComponent(Icon);
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing } from 'react-native-reanimated';
 import { useTabAnimation } from '../hooks/useTabAnimation';
+import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
+import Tab1 from './Tab1';
+import Tab2 from './Tab2';
 
 const Tab = createBottomTabNavigator();
 
-const BottomTabsNavigator = ({ ...props }: DrawerContentComponentProps) => {
-  const { boxAnimation, goIdle, moveTop, iconAnimation } = useTabAnimation();
-  const { boxAnimation: boxAnimation1, goIdle: goIdle1, moveTop: moveTop1, iconAnimation: iconAnimation1 } = useTabAnimation();
-  const { boxAnimation: boxAnimation2, goIdle: goIdle2, moveTop: moveTop2, iconAnimation: iconAnimation2 } = useTabAnimation();
-  const { boxAnimation: boxAnimation3, goIdle: goIdle3, moveTop: moveTop3, iconAnimation: iconAnimation3 } = useTabAnimation();
+interface Props {
+  navigation: DrawerNavigationHelpers
+}
+
+const BottomTabsNavigator = ({ navigation }: Props) => {
+  const {
+    boxAnimation,
+    goIdle,
+    moveTop,
+    iconAnimation,
+    backgroundAnimation
+  } = useTabAnimation();
+  const {
+    boxAnimation: boxAnimation1,
+    goIdle: goIdle1,
+    moveTop: moveTop1,
+    iconAnimation: iconAnimation1,
+    backgroundAnimation: backgroundAnimation1
+  } = useTabAnimation();
+  const {
+    boxAnimation: boxAnimation2,
+    goIdle: goIdle2,
+    moveTop: moveTop2,
+    iconAnimation: iconAnimation2,
+    backgroundAnimation: backgroundAnimation2
+  } = useTabAnimation();
 
   useEffect(() => {
     moveTop();
+    goIdle1();
+    goIdle2();
   }, []);
 
   return (
@@ -33,72 +59,62 @@ const BottomTabsNavigator = ({ ...props }: DrawerContentComponentProps) => {
         tabBarStyle: {
           ...styles.bottomBars,
         },
+        lazy: true,
+        optimizationsEnabled: true,
       })}
     >
       <Tab.Screen
         name="Dashboard"
-        children={() => <Dashboard {...props} />}
+        children={() => <Dashboard navigation={navigation} />}
         listeners={{ focus: () => moveTop(), blur: () => goIdle() }}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Animated.View style={[styles.box, boxAnimation]}>
+            <Animated.View style={[styles.box, boxAnimation, backgroundAnimation]}>
               <AnimatedIcon
                 name="home"
                 style={[iconAnimation]}
                 color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
               />
             </Animated.View>
-          )
+          ),
+          lazy: true,
         }}
       />
       <Tab.Screen
-        name="TopBeers"
-        children={() => <TopBeers {...props} />}
+        name="StackTopBeers"
+        children={() => <Tab1 navigation={navigation} />}
         listeners={{ focus: () => moveTop1(), blur: () => goIdle1() }}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Animated.View style={[styles.box, boxAnimation1]}>
+            <Animated.View style={[styles.box, boxAnimation1, backgroundAnimation1]}>
               <AnimatedIcon
                 name="trending-up"
                 style={[iconAnimation1]}
                 color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
               />
             </Animated.View>
-          )
+          ),
+          lazy: true,
         }}
       />
       <Tab.Screen
-        name="FindBeer"
-        children={() => <FindBeer {...props} setFocusedTab={moveTop3} />}
+        name="StackFindBeer"
+        children={() => <Tab2 navigation={navigation} />}
         listeners={{ focus: () => moveTop2(), blur: () => goIdle2() }}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Animated.View style={[styles.box, boxAnimation2]}>
+            <Animated.View style={[styles.box, boxAnimation2, backgroundAnimation2]}>
               <AnimatedIcon
                 name="search"
                 style={[iconAnimation2]}
                 color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
               />
             </Animated.View>
-          )
+          ),
+          lazy: true,
         }}
       />
-      <Tab.Screen
-        name="NewBeer"
-        children={() => <NewBeer {...props} />}
-        listeners={{ focus: () => moveTop3(), blur: () => goIdle3() }}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <Animated.View style={[styles.box, boxAnimation3]}>
-              <AnimatedIcon
-                name="add-circle"
-                style={[iconAnimation3]}
-                color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
-              />
-            </Animated.View>
-          )
-        }}
-      />
+
     </Tab.Navigator>
   );
 };
@@ -118,7 +134,7 @@ const styles = StyleSheet.create({
   box: {
     width: 50,
     height: 50,
-    backgroundColor: 'rgba(211, 157, 0, 1)',
+    // backgroundColor: 'rgba(211, 157, 0, 1)',
     borderRadius: 50,
     // margin: 100,
     // padding: 20,

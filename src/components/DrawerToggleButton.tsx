@@ -2,8 +2,13 @@ import React from 'react';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
 
-export const DrawerToggleButton = ({ navigation }: DrawerContentComponentProps) => {
+interface Props {
+  navigation: DrawerNavigationHelpers
+};
+
+export const DrawerToggleButton = ({ navigation }: Props) => {
   return (
     <TouchableOpacity
       activeOpacity={0.2}

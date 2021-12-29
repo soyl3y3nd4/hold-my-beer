@@ -1,5 +1,6 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react'
-import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
+import { Image, ImageBackground, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { BeerCollection } from '../interfaces/Beers';
 import { FadeInImage } from './FadeInImage';
@@ -11,16 +12,10 @@ interface Props {
 };
 
 export const ListItemTopBeer = ({ item, index, top = true }: Props) => {
+  const navigation = useNavigation<any>();
+
   return (
-    <View style={{
-      backgroundColor: 'rgba(255,255,255,1)',
-      display: 'flex',
-      justifyContent: 'space-between',
-      marginBottom: 25,
-      borderRadius: 8,
-      elevation: 5,
-      shadowColor: 'rgb(85, 64, 0)',
-    }}>
+    <View style={styles.listItemContainer}>
       {index === 0 && top && (
         <Image
           source={require('../images/gold.png')}
@@ -46,12 +41,6 @@ export const ListItemTopBeer = ({ item, index, top = true }: Props) => {
         source={require('../images/header.jpg')}
         resizeMode="cover"
       >
-        {/* {top && (
-          <Text
-            style={{ ...styles.textHeader, marginLeft: 15 }}>
-            {index + 1} -
-          </Text>
-        )} */}
         <Text
           style={{ ...styles.textHeader, marginLeft: top ? 20 : 25, letterSpacing: 1.1 }}>
           {item.name}
@@ -60,47 +49,60 @@ export const ListItemTopBeer = ({ item, index, top = true }: Props) => {
 
       <View style={styles.cardContent}>
 
-        <View style={{ width: '28%', height: 110, justifyContent: 'center', alignItems: 'center' }}>
-          <FadeInImage
-            uri={item.image_url}
-            style={{
-              resizeMode: 'contain',
-              width: '100%',
-              height: '100%',
-            }}
-          />
+        <View style={styles.beerImageContainer}>
+          {
+            item.image_url.length > 0
+              ? (
+                <FadeInImage
+                  uri={item.image_url}
+                  style={styles.beerImage}
+                />
+              )
+              : (
+                <FadeInImage
+                  image={require('../images/default_beer.png')}
+                  style={styles.beerImage}
+                />
+              )
+          }
+
         </View>
 
         <View style={{ width: '60%', paddingLeft: 20 }}>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ color: '#024750', fontSize: 13, fontFamily: 'JosefinBold' }}>Total votos: </Text>
-            <Text style={{ color: '#024750', fontSize: 12, fontFamily: 'JosefinRegular' }}>{item.votes}</Text>
+          <View style={styles.infoTextContainer}>
+            <Text style={styles.infoTextBold}>Total votos: </Text>
+            <Text style={styles.infoText}>{item.votes}</Text>
           </View>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ color: '#024750', fontSize: 13, fontFamily: 'JosefinBold' }}>Graduación: </Text>
-            <Text style={{ color: '#024750', fontSize: 12, fontFamily: 'JosefinRegular' }}>{item.abv}%</Text>
+          <View style={styles.infoTextContainer}>
+            <Text style={styles.infoTextBold}>Graduación: </Text>
+            <Text style={styles.infoText}>{item.abv}%</Text>
           </View>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
-            <Text style={{ color: '#024750', fontSize: 13, fontFamily: 'JosefinBold' }}>Ingredientes: </Text>
+          <View style={styles.ingredientWrapper}>
+            <Text style={styles.infoTextBold}>Ingredientes: </Text>
             {item.ingredients.map((ingredient, i) => (
-              <Text key={ingredient + i} style={{ color: '#024750', fontSize: 12, marginLeft: 1, fontFamily: 'JosefinRegular' }}>
+              <Text key={ingredient + i} style={styles.textIngredient}>
                 {ingredient}{i === item.ingredients.length - 1 ? '' : ','}
               </Text>
             ))}
           </View>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ color: '#024750', fontSize: 13, fontFamily: 'JosefinBold' }}>Origen: </Text>
-            <Text style={{ color: '#024750', fontSize: 12, fontFamily: 'JosefinRegular' }}>{item.origin_country}</Text>
+          <View style={styles.infoTextContainer}>
+            <Text style={styles.infoTextBold}>Origen: </Text>
+            <Text style={styles.infoText}>{item.origin_country}</Text>
           </View>
         </View>
 
-        <View style={{ alignSelf: 'center', width: '10%' }}>
+        <TouchableOpacity
+          style={{ alignSelf: 'center', width: '10%' }}
+          onPress={() => navigation.navigate('BeerScreen', {
+            beer: item
+          })}
+        >
           <Icon name="chevron-forward" size={30} color="rgb(145, 121, 33)" />
-        </View>
+        </TouchableOpacity>
 
       </View>
     </View >
@@ -108,6 +110,15 @@ export const ListItemTopBeer = ({ item, index, top = true }: Props) => {
 };
 
 const styles = StyleSheet.create({
+  listItemContainer: {
+    backgroundColor: 'rgba(255,255,255,1)',
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginBottom: 25,
+    borderRadius: 8,
+    elevation: 5,
+    shadowColor: 'rgb(85, 64, 0)',
+  },
   medalImage: {
     height: 45,
     width: 30,
@@ -137,5 +148,41 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 5,
     paddingVertical: 5,
+  },
+  beerImageContainer: {
+    width: '28%',
+    height: 110,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  beerImage: {
+    resizeMode: 'contain',
+    width: '100%',
+    height: '100%',
+  },
+  infoTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  infoTextBold: {
+    color: '#024750',
+    fontSize: 13,
+    fontFamily: 'JosefinBold'
+  },
+  infoText: {
+    color: '#024750',
+    fontSize: 12,
+    fontFamily: 'JosefinRegular'
+  },
+  ingredientWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  },
+  textIngredient: {
+    color: '#024750',
+    fontSize: 12,
+    marginLeft: 1,
+    fontFamily: 'JosefinRegular'
   }
 });

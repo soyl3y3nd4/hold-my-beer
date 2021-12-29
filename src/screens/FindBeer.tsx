@@ -17,13 +17,10 @@ import { BeerCollection } from '../interfaces/Beers';
 const screenWidth = Dimensions.get('window').width;
 
 interface Props {
-  state: DrawerNavigationState<ParamListBase>;
   navigation: DrawerNavigationHelpers;
-  descriptors: DrawerDescriptorMap;
-  setFocusedTab: (number: number) => void;
 };
 
-export const FindBeer = ({ setFocusedTab, ...props }: Props) => {
+export const FindBeer = ({ ...props }: Props) => {
   const { height, width } = useWindowDimensions();
 
   const { navigation } = props;
@@ -47,7 +44,14 @@ export const FindBeer = ({ setFocusedTab, ...props }: Props) => {
     if (term.length === 0) {
       return setFilteredBeers([]);
     };
-    const filtered = beers.filter((beer) => beer.name.toLowerCase().includes(term.toLowerCase()));
+    const filtered = beers.filter((beer) => {
+      const beerWithoutAccents = beer.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const termWithoutAccents = term.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+      if (beerWithoutAccents.includes(termWithoutAccents)) {
+        return beer;
+      }
+    });
     if (filtered.length > 0) {
       setFilteredBeers(filtered);
     } else {
@@ -56,7 +60,6 @@ export const FindBeer = ({ setFocusedTab, ...props }: Props) => {
   }, [term]);
 
   const navigateToAddBeer = () => {
-    setFocusedTab(3);
     navigation.navigate('NewBeer');
   };
 

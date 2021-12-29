@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: any) => {
 
     try {
       await auth().createUserWithEmailAndPassword(email, password);
-      await auth().currentUser!.sendEmailVerification();
+      await auth().currentUser?.sendEmailVerification();
 
       return signUpResp;
 
@@ -70,8 +70,12 @@ export const AuthProvider = ({ children }: any) => {
     };
 
     try {
-      await auth().signInWithEmailAndPassword(email, password);
+      const userCred = await auth().signInWithEmailAndPassword(email, password);
+      console.log(userCred);
+      await auth().currentUser?.reload();
+
       const user = auth().currentUser;
+
 
       if (hasUserVerifiedEmail()) {
         authenticate(user!);
@@ -81,6 +85,9 @@ export const AuthProvider = ({ children }: any) => {
 
       return respSignIng;
     } catch (error: any) {
+      if (auth().currentUser) {
+        auth().signOut();
+      }
       respSignIng.message = "Error while trying to login"
       respSignIng.status = 'no ok';
 
@@ -99,7 +106,6 @@ export const AuthProvider = ({ children }: any) => {
       if (!hasUserVerifiedEmail()) {
         respSignIng.message = "Email not verified, please check your email"
       }
-
       return respSignIng;
     }
   };
