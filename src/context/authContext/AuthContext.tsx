@@ -88,11 +88,16 @@ export const AuthProvider = ({ children }: any) => {
       if (auth().currentUser) {
         auth().signOut();
       }
+
       respSignIng.message = "Error while trying to login"
       respSignIng.status = 'no ok';
 
+      if (!hasUserVerifiedEmail()) {
+        respSignIng.message = "Email not verified, please check your email"
+      }
+
       if (error.code === 'auth/user-not-found') {
-        respSignIng.message = 'That user does not exist!';
+        respSignIng.message = 'Invalid user/password combination!';
       }
 
       if (error.code === 'auth/invalid-email') {
@@ -103,9 +108,7 @@ export const AuthProvider = ({ children }: any) => {
         respSignIng.message = 'Invalid user/password combination!';
       }
 
-      if (!hasUserVerifiedEmail()) {
-        respSignIng.message = "Email not verified, please check your email"
-      }
+      console.log(error);
       return respSignIng;
     }
   };

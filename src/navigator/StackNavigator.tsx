@@ -7,7 +7,7 @@ import DrawerNavigator from './DrawerNavigator';
 import { AuthContext } from '../context/authContext/AuthContext';
 import { RegisterScreen } from '../screens/RegisterScreen';
 import auth from '@react-native-firebase/auth';
-import { ImageBackground, useWindowDimensions } from 'react-native';
+import { Dimensions, ImageBackground, useWindowDimensions } from 'react-native';
 
 const Stack = createStackNavigator();
 
@@ -31,10 +31,18 @@ const StackNavigator = () => {
           backgroundColor: 'black',
         },
         headerShown: false,
-        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
         cardOverlay: () => (
           <ImageBackground
-            style={{ flex: 1, height, width, alignItems: 'center' }}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: Dimensions.get("window").width, //for full screen
+              height: Dimensions.get("window").height //for full screen
+            }}
             source={require('../images/piledbeers1.jpg')}
             resizeMode="cover"
           />

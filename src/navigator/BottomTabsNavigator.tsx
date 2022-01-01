@@ -6,14 +6,19 @@ import { FindBeer } from '../screens/FindBeer';
 import { NewBeer } from '../screens/NewBeer';
 import { Dashboard } from '../screens/Dashboard';
 import Icon from 'react-native-vector-icons/Ionicons';
+const AnimatedIcon = Animated.createAnimatedComponent(Icon);
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+const AnimatedMaterialIcon = Animated.createAnimatedComponent(MaterialCommunityIcon);
+
 import { TopBeers } from '../screens/TopBeers';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
-const AnimatedIcon = Animated.createAnimatedComponent(Icon);
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing } from 'react-native-reanimated';
 import { useTabAnimation } from '../hooks/useTabAnimation';
 import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
 import Tab1 from './Tab1';
 import Tab2 from './Tab2';
+import { FavouritesScreen } from '../screens/FavouritesScreen';
+import { VotesScreen } from '../screens/VotesScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -81,14 +86,14 @@ const BottomTabsNavigator = ({ navigation }: Props) => {
         }}
       />
       <Tab.Screen
-        name="StackTopBeers"
-        children={() => <Tab1 navigation={navigation} />}
+        name="FavouritesScreen"
+        children={() => <FavouritesScreen navigation={navigation} />}
         listeners={{ focus: () => moveTop1(), blur: () => goIdle1() }}
         options={{
           tabBarIcon: ({ focused }) => (
             <Animated.View style={[styles.box, boxAnimation1, backgroundAnimation1]}>
               <AnimatedIcon
-                name="trending-up"
+                name="heart-outline"
                 style={[iconAnimation1]}
                 color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
               />
@@ -98,14 +103,14 @@ const BottomTabsNavigator = ({ navigation }: Props) => {
         }}
       />
       <Tab.Screen
-        name="StackFindBeer"
-        children={() => <Tab2 navigation={navigation} />}
+        name="VotesScreen"
+        children={() => <VotesScreen navigation={navigation} />}
         listeners={{ focus: () => moveTop2(), blur: () => goIdle2() }}
         options={{
           tabBarIcon: ({ focused }) => (
             <Animated.View style={[styles.box, boxAnimation2, backgroundAnimation2]}>
-              <AnimatedIcon
-                name="search"
+              <AnimatedMaterialIcon
+                name="thumb-up-outline"
                 style={[iconAnimation2]}
                 color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
               />

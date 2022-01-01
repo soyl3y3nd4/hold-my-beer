@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Text, View, StyleSheet, Dimensions, Platform, FlatList, ImageBackground, useWindowDimensions } from 'react-native';
-import { DrawerNavigationState, ParamListBase } from '@react-navigation/core';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { DrawerDescriptorMap, DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
+import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
 
-import { useBeer } from '../hooks/useBeer';
+import { BeerContext } from '../context/beerContext/BeerContext';
+
 import { DrawerToggleButton } from '../components/DrawerToggleButton';
 import SearchInput from '../components/SearchInput';
 import { ListItemTopBeer } from '../components/ListItemTopBeer';
 import { FadeInImage } from '../components/FadeInImage';
 
 import { BeerCollection } from '../interfaces/Beers';
+import { LoadingScreen } from './LoadingScreen';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -25,13 +26,18 @@ export const FindBeer = ({ ...props }: Props) => {
 
   const { navigation } = props;
   const { top } = useSafeAreaInsets();
-  const { beers } = useBeer();
+  const { beers, getBeers, isLoading } = useContext(BeerContext);
 
   const [term, setTerm] = useState<string>('');
   const [textValue, setTextValue] = useState<string>('');
 
   const [filteredBeers, setFilteredBeers] = useState<BeerCollection[]>([]);
   const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (beers.length > 0) return;
+    getBeers();
+  }, []);
 
   useEffect(() => {
     if (isFocused) return;
@@ -65,20 +71,7 @@ export const FindBeer = ({ ...props }: Props) => {
 
   return (
     <ImageBackground style={{ height, width, alignItems: 'center', flex: 1, }} source={require('../images/bar.jpg')} resizeMode="cover">
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(221, 204, 157, 0.5)', position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, }}>
-        <DrawerToggleButton {...props} />
-
-        <SearchInput
-          textValue={textValue}
-          setTextValue={setTextValue}
-          onDebounce={(value) => setTerm(value)}
-          style={{
-            ...styles.searchInput,
-            top: Platform.OS === 'ios'
-              ? top
-              : top + 25,
-          }}
-        />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(221, 204, 157, 0.2)', position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, }}>
         <View style={{ flex: 1 }}>
           {
             term.length > 0 && filteredBeers.length === 0
@@ -121,6 +114,26 @@ export const FindBeer = ({ ...props }: Props) => {
           }
         </View>
       </View >
+      {
+        isLoading
+          ? <LoadingScreen />
+          : (
+            <>
+              <DrawerToggleButton {...props} />
+              <SearchInput
+                textValue={textValue}
+                setTextValue={setTextValue}
+                onDebounce={(value) => setTerm(value)}
+                style={{
+                  ...styles.searchInput,
+                  top: Platform.OS === 'ios'
+                    ? top
+                    : top + 25,
+                }}
+              />
+            </>
+          )
+      }
     </ImageBackground>
   );
 };

@@ -15,7 +15,13 @@ export const ListItemTopBeer = ({ item, index, top = true }: Props) => {
   const navigation = useNavigation<any>();
 
   return (
-    <View style={styles.listItemContainer}>
+    <TouchableOpacity
+      activeOpacity={0.98}
+      style={styles.listItemContainer}
+      onPress={() => navigation.navigate('BeerScreen', {
+        beer: item
+      })}
+    >
       {index === 0 && top && (
         <Image
           source={require('../images/gold.png')}
@@ -105,7 +111,7 @@ export const ListItemTopBeer = ({ item, index, top = true }: Props) => {
         </TouchableOpacity>
 
       </View>
-    </View >
+    </TouchableOpacity >
   );
 };
 

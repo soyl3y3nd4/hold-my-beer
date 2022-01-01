@@ -126,6 +126,12 @@ export const countries = [
     "flag": "🇧🇧"
   },
   {
+    "id": "Belgium",
+    "label": "Bélgica",
+    "value": "Bélgica",
+    "flag": "🇧🇪"
+  },
+  {
     "id": "Belize",
     "label": "Belice",
     "value": "Belice",
@@ -202,12 +208,6 @@ export const countries = [
     "label": "Bután",
     "value": "Bután",
     "flag": "🇧🇹"
-  },
-  {
-    "id": "Belgium",
-    "label": "Bélgica",
-    "value": "Bélgica",
-    "flag": "🇧🇪"
   },
   {
     "id": "Cape Verde",

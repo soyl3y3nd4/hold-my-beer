@@ -1,23 +1,27 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { TouchableOpacity, ScrollView, StyleSheet, Text, TextInput, View, ImageBackground, useWindowDimensions } from 'react-native';
+import { TouchableOpacity, ScrollView, StyleSheet, Text, TextInput, View, ImageBackground, useWindowDimensions, Image } from 'react-native';
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
-
-import firestore from '@react-native-firebase/firestore';
+import { useIsFocused } from '@react-navigation/native';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import { AlertContext } from '../context/alertContext/AlertContext';
-import { DrawerToggleButton } from '../components/DrawerToggleButton';
+import { BeerContext } from '../context/beerContext/BeerContext';
+
 import { useForm } from '../hooks/useForm';
+
+import { DrawerToggleButton } from '../components/DrawerToggleButton';
 import { beer_ingredients, beer_types, specialities } from '../helpers/beerIngredients';
 import { countries } from '../helpers/countries';
 import CustomDropDownPicker from '../components/CustomDropDownPicker';
 import { beerYears } from '../helpers/years';
-import { useBeer } from '../hooks/useBeer';
-import { useIsFocused } from '@react-navigation/native';
+import { LoadingScreen } from './LoadingScreen';
+import { Asset, launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { ModalMediaZone } from '../components/ModalMediaZone';
 
 const initialState = {
-  avb: '',
+  abv: '',
   short_description: '',
   description: '',
   first_brewed: '',
@@ -25,19 +29,9 @@ const initialState = {
   city: '',
 };
 
-type NewBeerField =
-  | 'avb'
-  | 'short_description'
-  | 'description'
-  | 'first_brewed'
-  | 'ingredients'
-  | 'name'
-  | 'city'
-  | 'origin_country'
-
 export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
   const {
-    avb,
+    abv,
     short_description,
     description,
     name,
@@ -48,22 +42,26 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
   const { height, width } = useWindowDimensions();
 
   const [openBeerType, setOpenBeerType] = useState(false);
-  const [type, setType] = useState(null);
+  const [type, setType] = useState<null | string>(null);
 
   const [openSpeciality, setOpenSpeciality] = useState(false);
-  const [speciality, setSpeciality] = useState(null);
+  const [speciality, setSpeciality] = useState<null | string>(null);
 
   const [openCountry, setOpenCountry] = useState(false);
-  const [country, setCountry] = useState(null);
+  const [origin_country, setOrigin_country] = useState<null | string>(null);
 
   const [openIngredients, setOpenIngredients] = useState(false);
-  const [ingredients, setIngredients] = useState(null);
+  const [ingredients, setIngredients] = useState<null | string>(null);
 
   const [openYears, setOpenYears] = useState(false);
-  const [years, setYears] = useState(null);
+  const [first_brewed, setFirst_brewed] = useState<null | string>(null);
 
   const { showAlert } = useContext(AlertContext);
-  const { beers } = useBeer();
+  const { beers, getBeers, uploadBeer, isLoading } = useContext(BeerContext);
+
+  const [tempUri, setTempUri] = useState<string | null>(null);
+  const [tempFile, setTempFile] = useState<Asset | null>(null);
+  const [modalMediaZoneIsOpen, setModalMediaZoneIsOpen] = useState(false);
 
   const isFocused = useIsFocused();
 
@@ -72,33 +70,58 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
     resetForm();
   }, [isFocused]);
 
-  const saveBeer = async () => {
-    console.log('GUARDAR BIRRA')
-    const ref = await firestore().collection('beers');
-    const beer = await ref.doc(name).get();
+  useEffect(() => {
+    if (beers.length > 0) return;
+    getBeers();
+  }, []);
 
-    if (beer.data()) {
+  const saveBeer = async () => {
+    const beer = {
+      description,
+      abv,
+      ingredients,
+      first_brewed,
+      image_url: '',
+      name,
+      short_description,
+      type,
+      speciality,
+      origin_country,
+      city,
+      votes: 0,
+    };
+
+    if (tempFile) {
+      const fileToUpload = {
+        uri: tempFile.uri,
+        type: tempFile.type,
+        name: tempFile.fileName
+      };
+      const formData = new FormData();
+      formData.append('file', fileToUpload);
+      formData.append("cloud_name", "dlpvgah6w");
+      formData.append("upload_preset", "hold_my_beer");
+
+      const resp = await fetch("https://api.cloudinary.com/v1_1/dlpvgah6w/image/upload", {
+        method: "post",
+        body: formData
+      });
+
+      const data = await resp.json();
+      beer.image_url = data.secure_url;
+    }
+
+    /* @ts-ignore */
+    const resp = await uploadBeer(beer);
+
+    if (!resp) {
+      onChange('', 'name');
       return showAlert({
         isOpen: true,
         buttonText: 'CERRAR',
-        message: 'Error, esta cerveza ya existe!',
+        message: `Error, esta cerveza ya existe!\nPrueba con otro nombre`,
       });
     } else {
-      ref.doc(name).set({
-        description,
-        abv: avb,
-        ingredients,
-        first_brewed: years,
-        image_url: '',
-        name,
-        short_description,
-        type,
-        speciality,
-        origin_country: country,
-        city,
-        votes: 0,
-      });
-      console.log('BIRRA GAURADISIMA')
       resetForm();
       return showAlert({
         isOpen: true,
@@ -109,72 +132,66 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
   };
 
   const onSubmitForm = () => {
-    console.log({
-      avb,
-      short_description,
-      description,
-      name,
-      city,
-      type,
-      speciality,
-      country,
-      ingredients,
-      years,
-    });
-    let isValid = true;
+    const numericRegex = new RegExp(/^\d+(\.\d{1,2})?$/);
 
+    let isValid = true;
+    let message = '';
+
+    checkIfBeerExists();
     if (checkIfBeerExists()) {
-      console.log('Ya existe', name);
       isValid = false;
+      message += `Ya existe una cerveza con ese nombre.\n`;
     }
 
     if (!name || name.length === 0) {
       isValid = false;
+      message += `Debes introducir un nombre.\n`;
     }
-    if (!avb || avb.length === 0) {
+
+    if (!abv || abv.length === 0 || !numericRegex.test(abv) || Number(abv) > 67 || Number(abv) < 0) {
       isValid = false;
+      message += `Debes de introducir una graduación válida.\n`;
     }
+
     if (!type || type.length === 0) {
       isValid = false;
+      message += `Debes de especificar un tipo.\n`;
     }
     if (!speciality || speciality.length === 0) {
       isValid = false;
+      message += `Debes de especificar una especialidad.\n`;
     }
-    if (!country || country.length === 0) {
+
+    if (!origin_country || origin_country.length === 0) {
       isValid = false;
+      message += `Debes especificar un país.\n`;
     }
+
     if (!city || city.length === 0) {
       isValid = false;
+      message += `Debes introducir una ciudad.\n`;
     }
-    if (!years || years.length === 0) {
+
+    if (!first_brewed || first_brewed.length === 0) {
       isValid = false;
+      message += `Debes especificar un año.\n`;
     }
+
     if (!ingredients || ingredients.length === 0) {
       isValid = false;
+      message += `La ciudad no es válida.\n`;
     }
 
     if (isValid) {
       saveBeer();
     } else {
-      console.log('NO VALKID')
+      return showAlert({
+        isOpen: true,
+        buttonText: 'CERRAR',
+        message,
+      });
     }
   };
-
-  // const onChange2 = (value: string, field: NewBeerField) => {
-  //   const numericRegex = new RegExp(/^\d+(\.\d{1,2})?$/);
-
-  //   // console.log({ value, field })
-  //   // console.log(numericRegex.test(value))
-  //   if (field === 'avb' && numericRegex.test(value)) {
-  //     onChange(value, field);
-  //   }
-
-
-  //   onChange(value, field)
-
-
-
-  // };
 
   const checkIfBeerExists = (): boolean => {
     let beerNameExists = false;
@@ -182,9 +199,9 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
     beers.map((beer) => {
       const beerWithoutAccents = beer.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const newBeerWithoutAccents = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
       if (beerWithoutAccents === newBeerWithoutAccents) {
         beerNameExists = true;
+        return;
       }
     });
 
@@ -194,24 +211,50 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
   const resetForm = () => {
     setType(null);
     setSpeciality(null);
-    setCountry(null);
+    setOrigin_country(null);
     setIngredients(null);
-    setYears(null);
+    setFirst_brewed(null);
+    setTempUri(null)
+    setTempFile(null);
     setFormValue(initialState);
+  };
+
+  const takePhoto = () => {
+    launchCamera({
+      mediaType: 'photo',
+      quality: 0.5
+    }, async (resp) => {
+      if (resp.didCancel) return;
+      if (!resp?.assets![0]?.uri) return;
+      setTempUri(resp.assets[0].uri);
+      setTempFile(resp.assets[0]);
+
+      setModalMediaZoneIsOpen(false);
+    });
+  };
+
+  const takePhotoFromLibrary = () => {
+    launchImageLibrary({
+      mediaType: 'photo',
+      quality: 0.5
+    }, async (resp) => {
+      if (resp.didCancel) return;
+      if (!resp?.assets![0]?.uri) return;
+
+      setTempUri(resp.assets[0].uri);
+      setTempFile(resp.assets[0]);
+
+      setModalMediaZoneIsOpen(false);
+    });
   };
 
   return (
     <>
-      <ImageBackground style={{ height, width, alignItems: 'center', flex: 1, }} source={require('../images/add_beer.jpg')} resizeMode="cover">
-        <DrawerToggleButton {...props} />
-
-        <TouchableOpacity
-          activeOpacity={0.2}
-          onPress={onSubmitForm}
-          style={styles.submit}
-        >
-          <MaterialCommunityIcons size={35} color="rgb(0, 255, 25)" style={{ top: -4, }} name="check" />
-        </TouchableOpacity>
+      <ImageBackground
+        style={{ height, width, alignItems: 'center', flex: 1, }}
+        source={require('../images/add_beer.jpg')}
+        resizeMode="cover"
+      >
 
         <ScrollView style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}>
           <View style={{ paddingHorizontal: 15, flex: 1, width: '100%', backgroundColor: 'rgba(221, 204, 157, 0.2)' }}>
@@ -222,6 +265,34 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               </Text>
             </View>
 
+            <TouchableOpacity
+              style={styles.mediaZone}
+              activeOpacity={0.8}
+              onPress={() => setModalMediaZoneIsOpen(true)}
+            >
+              {
+                tempUri
+                  ? (
+                    <ImageBackground
+                      source={{ uri: tempUri }}
+                      style={{ width: '100%', height: '100%' }}
+                    />
+                  )
+                  : (
+                    <View style={styles.mediaZoneNested}>
+                      <Icon name="camera-outline" size={30} color="rgba(211, 157, 0, 0.6)" />
+                      <Text style={styles.mediaZoneText}>Agregar Imagen</Text>
+                    </View>
+                  )
+              }
+            </TouchableOpacity>
+
+            <ModalMediaZone
+              takePhoto={takePhoto}
+              takePhotoFromLibrary={takePhotoFromLibrary}
+              isOpen={modalMediaZoneIsOpen}
+              close={() => setModalMediaZoneIsOpen(false)}
+            />
             {/* Beer Name input */}
             <View style={{ ...styles.inputContainer, width: width - 30, }}>
               <Text style={styles.inputInfo}>
@@ -238,13 +309,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
                 onChangeText={(value) => onChange(value, 'name')}
                 value={name}
               />
-              {/* <View style={styles.iconOkContainer}>
-                <Icon
-                  name="checkmark-outline"
-                  
-                  color="rgb(0, 160, 18)"
-                />
-              </View> */}
+
             </View>
 
             {/* Abv Name input */}
@@ -260,16 +325,9 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoCompleteType="off"
-                onChangeText={(value) => onChange(value, 'avb')}
-                value={avb}
+                onChangeText={(value) => onChange(value, 'abv')}
+                value={abv}
               />
-              {/* <View style={styles.iconOkContainer}>
-                <Icon
-                  name="checkmark-outline"
-                  
-                  color="rgb(0, 160, 18)"
-                />
-              </View> */}
             </View>
 
             {/* Beer Type picker */}
@@ -307,6 +365,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
                 disabled={!type}
                 open={openSpeciality}
                 value={speciality}
+                // @ts-ignore
                 items={type ? specialities[type] : []}
                 setOpen={setOpenSpeciality}
                 setValue={setSpeciality}
@@ -323,10 +382,10 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               <MaterialCommunityIcons style={styles.iconInput} name="earth" />
               <CustomDropDownPicker
                 open={openCountry}
-                value={country}
+                value={origin_country}
                 items={countries}
                 setOpen={setOpenCountry}
-                setValue={setCountry}
+                setValue={setOrigin_country}
                 placeholder=""
                 mode="BADGE"
                 modalTitle="Seleccionar país"
@@ -349,13 +408,6 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
                 onChangeText={(value) => onChange(value, 'city')}
                 value={city}
               />
-              {/* <View style={styles.iconOkContainer}>
-                <Icon
-                  name="checkmark-outline"
-                  
-                  color="rgb(0, 160, 18)"
-                />
-              </View> */}
             </View>
 
             {/* City Beer input */}
@@ -366,21 +418,13 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               <MaterialCommunityIcons style={styles.iconInput} name="calendar-range" />
               <CustomDropDownPicker
                 open={openYears}
-                value={years}
+                value={first_brewed}
                 items={beerYears}
                 setOpen={setOpenYears}
-                setValue={setYears}
+                setValue={setFirst_brewed}
                 placeholder=""
                 modalTitle="Año de primera elaboración"
               />
-
-              {/* <View style={styles.iconOkContainer}>
-                <Icon
-                  name="checkmark-outline"
-                  
-                  color="rgb(0, 160, 18)"
-                />
-              </View> */}
             </View>
 
             {/* Ingredients Beer input */}
@@ -425,18 +469,6 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
 
                 numberOfLines={4}
               />
-              {/* <View
-                style={{
-                  ...styles.iconOkContainer,
-                  top: 35,
-                }}
-              >
-                <Icon
-                  name="checkmark-outline"
-                  
-                  color="rgb(0, 160, 18)"
-                />
-              </View> */}
             </View>
 
             {/* Description Beer input */}
@@ -464,21 +496,32 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
                 numberOfLines={8}
 
               />
-              {/* <View
-                style={{
-                  ...styles.iconOkContainer,
-                  top: 85,
-                }}
-              >
-                <Icon
-                  name="checkmark-outline"
-                  
-                  color="rgb(0, 160, 18)"
-                />
-              </View> */}
             </View>
           </View>
         </ScrollView>
+
+        {isLoading
+          ?
+          <LoadingScreen />
+          : (
+            <>
+              <DrawerToggleButton {...props} />
+
+              <TouchableOpacity
+                activeOpacity={0.2}
+                onPress={onSubmitForm}
+                style={styles.submit}
+              >
+                <MaterialCommunityIcons
+                  size={32}
+                  color="rgba(255,255,255,1)"
+                  style={{ top: -4, }}
+                  name="check"
+                />
+              </TouchableOpacity>
+            </>
+          )
+        }
       </ImageBackground>
     </>
   );
@@ -494,6 +537,31 @@ const styles = StyleSheet.create({
     paddingVertical: 25,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  mediaZone: {
+    borderWidth: 1,
+    height: 100,
+    borderRadius: 5,
+    borderColor: 'rgba(0,0,0,0.05)',
+    elevation: 3,
+    backgroundColor: 'rgba(255, 255, 230, 0.9)',
+    marginBottom: 13,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  mediaZoneNested: {
+    borderWidth: 1,
+    width: '95%',
+    height: '90%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: 'rgba(0,0,0,0.1)',
+    borderRadius: 5,
+  },
+  mediaZoneText: {
+    fontFamily: 'JosefinBold',
+    fontSize: 14,
+    color: 'rgba(211, 157, 0, 0.6)',
   },
   headerText: {
     fontFamily: 'JosefinBold',
@@ -533,14 +601,14 @@ const styles = StyleSheet.create({
     color: 'rgb(127, 85, 1)',
     fontFamily: 'JosefinBold',
   },
-  iconOkContainer: {
+  iconFeedbackContainer: {
     height: 28,
     width: 28,
     paddingLeft: 1,
     borderRadius: 20,
     position: 'absolute',
     right: 14,
-    top: 13,
+    top: 15,
   },
   buttonContainer: {
     alignItems: 'center',
@@ -566,8 +634,8 @@ const styles = StyleSheet.create({
     left: 15,
     zIndex: 3,
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    borderRadius: 10,
-    height: 34,
+    borderRadius: 5,
+    height: 32,
     padding: 3,
   }
 });

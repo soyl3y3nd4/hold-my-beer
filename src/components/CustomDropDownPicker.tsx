@@ -7,7 +7,7 @@ interface Props {
   value: string | null;
   items: ItemType[];
   setOpen: Dispatch<SetStateAction<boolean>>;
-  setValue: Dispatch<SetStateAction<null>>;
+  setValue: Dispatch<SetStateAction<any>>;
   modalTitle?: string
   placeholder?: string;
   disabled?: boolean;

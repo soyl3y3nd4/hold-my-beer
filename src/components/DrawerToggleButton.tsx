@@ -1,5 +1,4 @@
 import React from 'react';
-import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
@@ -17,14 +16,14 @@ export const DrawerToggleButton = ({ navigation }: Props) => {
         position: 'absolute',
         top: 26,
         right: 15,
-        zIndex: 3,
-        backgroundColor: 'rgba(0, 0, 0, 0.2)',
-        borderRadius: 10,
+        zIndex: 101,
+        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+        borderRadius: 5,
         height: 32,
         padding: 0,
       }}
     >
-      <Icon name="menu" size={40} color="white" style={{ top: -5, }} />
+      <Icon name="menu" size={35} color="rgba(255,255,255,1)" style={{ top: -2.5, }} />
     </TouchableOpacity>
   );
 };

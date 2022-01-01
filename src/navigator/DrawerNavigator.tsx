@@ -1,11 +1,16 @@
 import React, { useContext } from 'react';
 import { createDrawerNavigator, DrawerContentComponentProps, DrawerContentScrollView } from '@react-navigation/drawer';
 import { ProfileScreen } from '../screens/ProfileScreen';
-import BottomTabsNavigator from './BottomTabsNavigator';
+
 import { View, Text, Image, TouchableOpacity, StyleSheet, useWindowDimensions, ImageBackground } from 'react-native';
 import { AuthContext } from '../context/authContext/AuthContext';
 import Icon from 'react-native-vector-icons/Ionicons';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { NewBeer } from '../screens/NewBeer';
+import { Dashboard } from '../screens/Dashboard';
+import Tab1 from './Tab1';
+import Tab2 from './Tab2';
+import BottomTabsNavigator from './BottomTabsNavigator';
 
 const Drawer = createDrawerNavigator();
 
@@ -20,6 +25,8 @@ const DrawerNavigator = () => {
       }}
     >
       <Drawer.Screen name="BottomTabsNavigator" component={BottomTabsNavigator} />
+      <Drawer.Screen name="Tab1" component={Tab1} />
+      <Drawer.Screen name="Tab2" component={Tab2} />
       <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
       <Drawer.Screen name="NewBeer" component={NewBeer} />
     </Drawer.Navigator>
@@ -95,7 +102,25 @@ const MenuContent = ({ navigation }: DrawerContentComponentProps) => {
             style={styles.menuButton}
           >
             <Icon name="home-outline" size={30} color="rgba(0, 0, 0, 0.5)" />
-            <Text style={styles.menuItem}>Menú Principal</Text>
+            <Text style={styles.menuItem}>Panel Principal</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('Tab1')}
+            style={styles.menuButton}
+          >
+            <MaterialIcon name="format-vertical-align-top" size={30} color="rgba(0, 0, 0, 0.5)" />
+            <Text style={styles.menuItem}>Top Cervezas</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('Tab2')}
+            style={styles.menuButton}
+          >
+            <Icon name="search" size={30} color="rgba(0, 0, 0, 0.5)" />
+            <Text style={styles.menuItem}>Buscar Cerveza</Text>
           </TouchableOpacity>
 
           <TouchableOpacity

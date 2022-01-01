@@ -1,20 +1,24 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { View, FlatList, RefreshControl, Text, ImageBackground, useWindowDimensions } from 'react-native';
-import { DrawerContentComponentProps } from '@react-navigation/drawer';
 
 import { ListItemTopBeer } from '../components/ListItemTopBeer';
 import { DrawerToggleButton } from '../components/DrawerToggleButton';
-import { useBeer } from '../hooks/useBeer';
 import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
+import { BeerContext } from '../context/beerContext/BeerContext';
+import { LoadingScreen } from './LoadingScreen';
 
 interface Props {
   navigation: DrawerNavigationHelpers
 };
 
 export const TopBeers = ({ navigation }: Props) => {
-  const { beers, getBeers } = useBeer();
+  const { beers, getBeers, isLoading } = useContext(BeerContext);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { height, width } = useWindowDimensions();
+
+  useEffect(() => {
+    getBeers();
+  }, []);
 
   const onRefresh = async () => {
     setIsRefreshing(true);
@@ -26,8 +30,8 @@ export const TopBeers = ({ navigation }: Props) => {
 
   return (
     <>
-      <DrawerToggleButton navigation={navigation} />
       <ImageBackground style={{ height, width, alignItems: 'center', flex: 1, }} source={require('../images/bar.jpg')} resizeMode="cover">
+
         <FlatList
           style={{
             paddingHorizontal: 15,
@@ -56,6 +60,11 @@ export const TopBeers = ({ navigation }: Props) => {
             return <ListItemTopBeer item={item} index={index} top />
           }}
         />
+        {
+          isLoading
+            ? <LoadingScreen />
+            : <DrawerToggleButton navigation={navigation} />
+        }
       </ImageBackground>
     </>
   );

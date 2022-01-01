@@ -38,13 +38,13 @@ export const loginTheme = StyleSheet.create({
   },
   loginForm: {
     marginTop: 70,
-    flex: 2,
+    flex: 1,
   },
   loginFooter: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 40,
     width: '100%',
+    bottom: 0,
   },
   signUpText: {
     color: 'rgba(255, 211, 79, 0.85)',
