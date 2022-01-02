@@ -7,11 +7,15 @@ type BeerContextProps = {
   beers: BeerCollection[] | [];
   getBeers: () => void;
   uploadBeer: (beer: BeerCollection) => Promise<boolean>;
+  favouriteBeers: BeerCollection[] | [];
+  getFavouriteBeers: (email: string) => void;
+  toggleFavouriteBeer: (email: string, beer: BeerCollection) => void;
 };
 
 const initialState = {
   isLoading: true,
   beers: [],
+  favouriteBeers: [],
 };
 
 export const BeerContext = createContext(initialState as BeerContextProps);
@@ -19,6 +23,7 @@ export const BeerContext = createContext(initialState as BeerContextProps);
 export const BeerProvider = ({ children }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [beers, setBeers] = useState<BeerCollection[]>([]);
+  const [favouriteBeers, setFavouriteBeers] = useState<BeerCollection[]>([]);
 
   const getBeers = async () => {
     setIsLoading(true);
@@ -46,12 +51,46 @@ export const BeerProvider = ({ children }: any) => {
     return isBeerUploaded;
   };
 
+  const getFavouriteBeers = async (email: string) => {
+    setIsLoading(true);
+    const ref = await firestore().collection('users');
+    const userRef = await ref.doc(email).get();
+
+    const favourites = userRef.data()?.favorites;
+    setFavouriteBeers([...favourites]);
+    setIsLoading(false);
+  };
+
+  const toggleFavouriteBeer = async (email: string, beer: BeerCollection) => {
+    const ref = await firestore().collection('users');
+    const userRef = await ref.doc(email).get();
+
+    const favourites = userRef.data()?.favorites;
+    const isFavorite = favourites?.some((favouriteBeer: BeerCollection) => favouriteBeer.name === beer.name);
+
+    if (isFavorite) {
+      const filteredFavourites = favourites?.filter((favouriteBeer: BeerCollection) => favouriteBeer.name !== beer.name);
+      ref.doc(email).set({
+        favorites: [...filteredFavourites],
+      }, { merge: true });
+      setFavouriteBeers([...filteredFavourites]);
+    } else {
+      ref.doc(email).set({
+        favorites: [...favourites, beer]
+      }, { merge: true });
+      setFavouriteBeers([...favourites, beer]);
+    }
+  };
+
   return (
     <BeerContext.Provider value={{
       isLoading,
       beers,
       getBeers,
-      uploadBeer
+      uploadBeer,
+      favouriteBeers,
+      getFavouriteBeers,
+      toggleFavouriteBeer,
     }}>
       {children}
     </BeerContext.Provider>

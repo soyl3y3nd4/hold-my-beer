@@ -55,7 +55,7 @@ const MenuContent = ({ navigation }: DrawerContentComponentProps) => {
           elevation: 5,
         }} >
           <Image
-            source={require('../images/avatar.jpg')} style={{
+            source={require('../images/avatars/avatar.jpg')} style={{
               resizeMode: 'contain',
               width: '100%',
               height: '100%',

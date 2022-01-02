@@ -70,12 +70,10 @@ export const AuthProvider = ({ children }: any) => {
     };
 
     try {
-      const userCred = await auth().signInWithEmailAndPassword(email, password);
-      console.log(userCred);
+      await auth().signInWithEmailAndPassword(email, password);
       await auth().currentUser?.reload();
 
       const user = auth().currentUser;
-
 
       if (hasUserVerifiedEmail()) {
         authenticate(user!);

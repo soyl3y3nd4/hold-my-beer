@@ -80,7 +80,11 @@ export const RegisterScreen = () => {
           email,
           name,
           surname,
-          birth_date: date.toLocaleDateString()
+          birth_date: date.toLocaleDateString(),
+          favourites: [],
+          votes: [],
+          avatar: 'default_avatar.jpg',
+          background_avatar: 'default_background.jpg',
         });
       }
     } else {

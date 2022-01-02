@@ -22,7 +22,6 @@ import { ModalMediaZone } from '../components/ModalMediaZone';
 
 const initialState = {
   abv: '',
-  short_description: '',
   description: '',
   first_brewed: '',
   name: '',
@@ -32,7 +31,6 @@ const initialState = {
 export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
   const {
     abv,
-    short_description,
     description,
     name,
     city,
@@ -83,7 +81,6 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
       first_brewed,
       image_url: '',
       name,
-      short_description,
       type,
       speciality,
       origin_country,
@@ -444,30 +441,6 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
                 min={1}
                 mode="BADGE"
                 modalTitle="Seleccionar ingredientes"
-              />
-            </View>
-
-            {/* Short Description Beer input */}
-            <View style={{ ...styles.inputContainer, width: width - 30, }}>
-              <Text style={styles.inputInfo}>
-                Descripción breve
-              </Text>
-              <MaterialCommunityIcons style={styles.iconInput} name="text-short" />
-              <TextInput
-                style={{
-                  ...styles.inputField,
-                  maxHeight: 85,
-                }}
-                keyboardType="default"
-                selectionColor="lightgrey"
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoCompleteType="off"
-                onChangeText={(value) => onChange(value, 'short_description')}
-                value={short_description}
-                multiline={true}
-
-                numberOfLines={4}
               />
             </View>
 

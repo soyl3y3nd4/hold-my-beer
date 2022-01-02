@@ -38,3 +38,14 @@ App still in progress
   {_TickIconComponent}
 </TouchableOpacity>
 ```
+
+## Modified package node_modules **@ui-kitten/components/ui/modal** modal.component.js line 108
+
+```jsx
+import { LogBox } from 'react-native';
+
+    render() {
+        LogBox.ignoreAllLogs();
+        return null;
+    }
+```

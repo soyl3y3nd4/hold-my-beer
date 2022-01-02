@@ -9,7 +9,6 @@ export interface BeerCollection {
   name: string;
   first_brewed: string;
   speciality: string;
-  short_description: string;
   type: string;
   votes: number;
   origin_country: string;
