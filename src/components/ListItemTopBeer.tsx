@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Image, ImageBackground, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { AirbnbRating } from 'react-native-ratings';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { countries } from '../helpers/countries';
 import { getBeerAverage } from '../helpers/helpers';
 import { BeerCollection } from '../interfaces/Beers';
 import { FadeInImage } from './FadeInImage';
@@ -86,7 +87,10 @@ export const ListItemTopBeer = ({ item, index, top = true }: Props) => {
 
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoTextBold}>País: </Text>
-            <Text style={styles.infoText}>{item.origin_country}</Text>
+            <Text style={styles.infoText}>
+              {`${item.origin_country} `}
+              {countries.find((countrie) => countrie.value === item.origin_country)?.flag}
+            </Text>
           </View>
 
           <View style={styles.infoTextContainer}>
