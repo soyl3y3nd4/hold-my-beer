@@ -16,7 +16,7 @@ import { countries } from '../helpers/countries';
 import { AuthContext } from '../context/authContext/AuthContext';
 import { BeerCollection, BeerRatings } from '../interfaces/Beers';
 import { BeerContext } from '../context/beerContext/BeerContext';
-import { getBeerAverage } from '../helpers/helpers';
+import { getBeerAverage, waitFor } from '../helpers/helpers';
 
 interface Props extends StackScreenProps<RootStackParams, 'BeerScreen'> { };
 
@@ -58,20 +58,23 @@ export const BeerScreen = ({ navigation, route }: Props) => {
     toggleFavouriteBeer(user?.email || '', beer)
   };
 
-  const ratingCompleted = (rating: number) => {
+  const ratingCompleted = async (rating: number) => {
     const updatedBeer = {
       ...beer,
       ratings: [...beer.ratings, { rate: rating, userId: user?.email || '' }],
     };
 
-    rateBeer(updatedBeer, rating);
-    setTimeout(() => {
-      setUserCanVote(false);
-      setTip(false);
-      navigation.navigate('BeerScreen', {
-        beer: updatedBeer
-      });
-    }, 500);
+    rateBeer(updatedBeer);
+
+    await waitFor(500);
+    setTip(false);
+
+    await waitFor(300);
+    setUserCanVote(false);
+
+    navigation.navigate('BeerScreen', {
+      beer: updatedBeer
+    });
   };
 
   return (

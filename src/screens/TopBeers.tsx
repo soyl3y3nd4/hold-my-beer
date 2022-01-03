@@ -6,9 +6,10 @@ import { DrawerToggleButton } from '../components/DrawerToggleButton';
 import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
 import { BeerContext } from '../context/beerContext/BeerContext';
 import { LoadingScreen } from './LoadingScreen';
+import { waitFor } from '../helpers/helpers';
 
 interface Props {
-  navigation: DrawerNavigationHelpers
+  navigation: DrawerNavigationHelpers,
 };
 
 export const TopBeers = ({ navigation }: Props) => {
@@ -22,10 +23,10 @@ export const TopBeers = ({ navigation }: Props) => {
 
   const onRefresh = async () => {
     setIsRefreshing(true);
-    setTimeout(async () => {
-      await getBeers();
-      setIsRefreshing(false);
-    }, 300);
+    await waitFor(300);
+
+    await getBeers();
+    setIsRefreshing(false);
   };
 
   return (

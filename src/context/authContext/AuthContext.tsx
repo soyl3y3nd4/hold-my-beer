@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: any) => {
 
   const signUp = async ({ email, password }: LoginCreds): Promise<signInUpResp> => {
     const signUpResp = {
-      message: 'Registered successfully',
+      message: 'Registro creado satisfactoriamente',
       status: 'ok',
     };
 
@@ -49,15 +49,15 @@ export const AuthProvider = ({ children }: any) => {
       return signUpResp;
 
     } catch (error: any) {
-      signUpResp.message = 'Error while creating user';
+      signUpResp.message = 'Error al crear el usuario';
       signUpResp.status = 'no ok';
 
       if (error.code === 'auth/email-already-in-use') {
-        signUpResp.message = 'That email address is already in use!';
+        signUpResp.message = 'El email introducido ya está en uso!';
       }
 
       if (error.code === 'auth/invalid-email') {
-        signUpResp.message = 'That email address is invalid!';
+        signUpResp.message = 'El email introducido no es válido!';
       }
       return signUpResp;
     }
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: any) => {
 
   const signIn = async ({ email, password }: LoginCreds): Promise<signInUpResp> => {
     const respSignIng = {
-      message: 'Login successful',
+      message: 'Autenticación exitosa',
       status: 'ok',
     };
 
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }: any) => {
       if (hasUserVerifiedEmail()) {
         authenticate(user!);
       } else {
-        throw new Error('User email waiting to be verified');
+        throw new Error('Email a la espera de ser verificado');
       }
 
       return respSignIng;
@@ -87,26 +87,25 @@ export const AuthProvider = ({ children }: any) => {
         auth().signOut();
       }
 
-      respSignIng.message = "Error while trying to login"
+      respSignIng.message = "Error al hacer login"
       respSignIng.status = 'no ok';
 
       if (!hasUserVerifiedEmail()) {
-        respSignIng.message = "Email not verified, please check your email"
+        respSignIng.message = "Email no verificado, verifique su bandeja de entrada o spam";
       }
 
       if (error.code === 'auth/user-not-found') {
-        respSignIng.message = 'Invalid user/password combination!';
+        respSignIng.message = 'Combinación usuario/contraseña no válida!';
       }
 
       if (error.code === 'auth/invalid-email') {
-        respSignIng.message = 'That email address is invalid!';
+        respSignIng.message = 'La dirección de email no es válida!';
       }
 
       if (error.code === 'auth/wrong-password') {
-        respSignIng.message = 'Invalid user/password combination!';
+        respSignIng.message = 'Combinación usuario/contraseña no válida!';
       }
 
-      console.log(error);
       return respSignIng;
     }
   };

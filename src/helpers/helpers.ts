@@ -8,11 +8,16 @@ export const calculate_age = (date: Date) => {
 };
 
 export const getBeerAverage = (beer: BeerCollection) => {
-  if (beer.ratings.length === 0) return;
   let average = 0;
+
+  if (beer.ratings.length === 0) return average;
   const addition = beer.ratings.reduce((a: number, b: BeerRatings) => a + b.rate, 0);
 
   return (addition === 0)
     ? average
     : addition / beer.ratings.length;
+};
+
+export const waitFor = (ms: number) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
 };

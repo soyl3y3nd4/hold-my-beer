@@ -27,7 +27,7 @@ import { HomeScreenProp } from '../interfaces/Navigation';
 import { AlertContext } from '../context/alertContext/AlertContext';
 import { LoadingScreen } from './LoadingScreen';
 import { useAnimatedBorder } from '../hooks/userAnimatedBorder';
-import { calculate_age } from '../helpers/helpers';
+import { calculate_age, waitFor } from '../helpers/helpers';
 import { KeyboardContext } from '../context/keyboardContext/KeyboardContext';
 
 const initialFormValues = {
@@ -75,6 +75,7 @@ export const RegisterScreen = () => {
       handleRegisterSuccess();
       const ref = await firestore().collection('users');
       const user = await ref.doc(email).get();
+
       if (!user.data()) {
         ref.doc(email).set({
           email,
@@ -83,6 +84,7 @@ export const RegisterScreen = () => {
           birth_date: date.toLocaleDateString(),
           favourites: [],
           votes: [],
+          new_beers: [],
           avatar: 'default_avatar.jpg',
           background_avatar: 'default_background.jpg',
         });
@@ -96,7 +98,7 @@ export const RegisterScreen = () => {
     }
   };
 
-  const handleRegisterSuccess = () => {
+  const handleRegisterSuccess = async () => {
     showAlert({
       isOpen: true,
       buttonText: 'ACEPTAR',
@@ -104,9 +106,8 @@ export const RegisterScreen = () => {
     });
     setFormValue(initialFormValues);
 
-    setTimeout(() => {
-      navigation.navigate('LoginScreen')
-    }, 300);
+    await waitFor(300);
+    navigation.navigate('LoginScreen');
   };
 
   const onSubmitForm = () => {

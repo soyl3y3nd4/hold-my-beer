@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text, View, ScrollView, ImageBackground, Dimensions } from 'react-native'
-import { } from '@react-navigation/drawer';
+
 import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
 
 import { DrawerToggleButton } from '../components/DrawerToggleButton';

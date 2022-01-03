@@ -18,7 +18,7 @@ import { KeyboardContext } from '../context/keyboardContext/KeyboardContext';
 
 export const LoginScreen = () => {
   const navigation = useNavigation<HomeScreenProp>();
-  const { height, width } = useWindowDimensions();
+  const { width } = useWindowDimensions();
 
   const { isLoading, signIn, setIsLoading } = useContext(AuthContext);
   const { showAlert } = useContext(AlertContext);

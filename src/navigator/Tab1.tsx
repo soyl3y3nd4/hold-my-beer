@@ -14,7 +14,8 @@ export type RootStackParams = {
 
 interface Props {
   navigation: DrawerNavigationHelpers,
-}
+};
+
 const Stack = createStackNavigator<RootStackParams>();
 
 const Tab1 = ({ navigation }: Props) => {

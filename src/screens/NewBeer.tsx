@@ -19,6 +19,8 @@ import { beerYears } from '../helpers/years';
 import { LoadingScreen } from './LoadingScreen';
 import { Asset, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { ModalMediaZone } from '../components/ModalMediaZone';
+import { ModalRedirect } from '../components/ModalRedirect';
+import { waitFor } from '../helpers/helpers';
 
 const initialState = {
   abv: '',
@@ -39,6 +41,8 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
   } = useForm(initialState);
   const { height, width } = useWindowDimensions();
 
+  const { navigation } = props;
+
   const [openBeerType, setOpenBeerType] = useState(false);
   const [type, setType] = useState<null | string>(null);
 
@@ -55,11 +59,13 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
   const [first_brewed, setFirst_brewed] = useState<null | string>(null);
 
   const { showAlert } = useContext(AlertContext);
-  const { beers, getBeers, uploadBeer, isLoading, setIsLoading } = useContext(BeerContext);
+  const { beers, getBeers, uploadBeer, isLoading, setIsLoading, uploadImageBeer } = useContext(BeerContext);
 
   const [tempUri, setTempUri] = useState<string | null>(null);
   const [tempFile, setTempFile] = useState<Asset | null>(null);
   const [modalMediaZoneIsOpen, setModalMediaZoneIsOpen] = useState(false);
+
+  const [modalRedirectIsOpen, setModalRedirectIsOpen] = useState(false);
 
   const isFocused = useIsFocused();
 
@@ -92,23 +98,8 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
     };
 
     if (tempFile) {
-      const fileToUpload = {
-        uri: tempFile.uri,
-        type: tempFile.type,
-        name: tempFile.fileName
-      };
-      const formData = new FormData();
-      formData.append('file', fileToUpload);
-      formData.append("cloud_name", "dlpvgah6w");
-      formData.append("upload_preset", "hold_my_beer");
-
-      const resp = await fetch("https://api.cloudinary.com/v1_1/dlpvgah6w/image/upload", {
-        method: "post",
-        body: formData
-      });
-
-      const data = await resp.json();
-      beer.image_url = data.secure_url;
+      const imageUrl = await uploadImageBeer(tempFile);
+      beer.image_url = imageUrl;
     }
 
     /* @ts-ignore */
@@ -123,14 +114,18 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
         message: `Error, esta cerveza ya existe!\nPrueba con otro nombre`,
       });
     } else {
-      resetForm();
       setIsLoading(false);
-      return showAlert({
-        isOpen: true,
-        buttonText: 'CERRAR',
-        message: 'Cerveza agregada!',
-      });
+      resetForm();
+
+      setModalRedirectIsOpen(true);
     }
+  };
+
+  const redirectToTab1 = async () => {
+    setModalRedirectIsOpen(false);
+    await waitFor(300);
+
+    navigation.navigate('Tab1');
   };
 
   const onSubmitForm = () => {
@@ -295,6 +290,14 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               isOpen={modalMediaZoneIsOpen}
               close={() => setModalMediaZoneIsOpen(false)}
             />
+
+            <ModalRedirect
+              buttonText="ACEPTAR"
+              isOpen={modalRedirectIsOpen}
+              close={redirectToTab1}
+              message="Cerveza agregada con éxito, gracias!"
+            />
+
             {/* Beer Name input */}
             <View style={{ ...styles.inputContainer, width: width - 30, }}>
               <Text style={styles.inputInfo}>
