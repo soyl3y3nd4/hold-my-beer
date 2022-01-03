@@ -55,7 +55,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
   const [first_brewed, setFirst_brewed] = useState<null | string>(null);
 
   const { showAlert } = useContext(AlertContext);
-  const { beers, getBeers, uploadBeer, isLoading } = useContext(BeerContext);
+  const { beers, getBeers, uploadBeer, isLoading, setIsLoading } = useContext(BeerContext);
 
   const [tempUri, setTempUri] = useState<string | null>(null);
   const [tempFile, setTempFile] = useState<Asset | null>(null);
@@ -74,6 +74,8 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
   }, []);
 
   const saveBeer = async () => {
+    setIsLoading(true);
+
     const beer = {
       description,
       abv,
@@ -86,6 +88,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
       origin_country,
       city,
       votes: 0,
+      ratings: [],
     };
 
     if (tempFile) {
@@ -113,6 +116,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
 
     if (!resp) {
       onChange('', 'name');
+      setIsLoading(false);
       return showAlert({
         isOpen: true,
         buttonText: 'CERRAR',
@@ -120,6 +124,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
       });
     } else {
       resetForm();
+      setIsLoading(false);
       return showAlert({
         isOpen: true,
         buttonText: 'CERRAR',
@@ -450,7 +455,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               marginBottom: 40,
             }}>
               <Text style={styles.inputInfo}>
-                Descripción detallada
+                Descripción
               </Text>
               <MaterialCommunityIcons style={styles.iconInput} name="text" />
               <TextInput
@@ -466,7 +471,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
                 onChangeText={(value) => onChange(value, 'description')}
                 value={description}
                 multiline={true}
-                numberOfLines={8}
+                numberOfLines={6}
 
               />
             </View>

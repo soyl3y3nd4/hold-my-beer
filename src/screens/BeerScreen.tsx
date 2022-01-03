@@ -1,16 +1,22 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ScrollView, ImageBackground, useWindowDimensions, Image, Dimensions } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, ScrollView, ImageBackground, Image, Dimensions } from 'react-native';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { StackScreenProps } from '@react-navigation/stack';
 
-import { RootStackParams } from '../navigator/Tab1';
+import { AirbnbRating } from 'react-native-ratings';
+import Tooltip from 'react-native-walkthrough-tooltip';
+
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { RootStackParams } from '../navigator/Tab1';
 import { countries } from '../helpers/countries';
-import firestore from '@react-native-firebase/firestore';
+
 import { AuthContext } from '../context/authContext/AuthContext';
-import { BeerCollection } from '../interfaces/Beers';
+import { BeerCollection, BeerRatings } from '../interfaces/Beers';
 import { BeerContext } from '../context/beerContext/BeerContext';
+import { getBeerAverage } from '../helpers/helpers';
 
 interface Props extends StackScreenProps<RootStackParams, 'BeerScreen'> { };
 
@@ -19,17 +25,53 @@ export const BeerScreen = ({ navigation, route }: Props) => {
   const { beer } = route.params;
 
   const { user } = useContext(AuthContext);
-  const { favouriteBeers, toggleFavouriteBeer } = useContext(BeerContext);
+  const { favouriteBeers, toggleFavouriteBeer, rateBeer } = useContext(BeerContext);
 
-  const [isFavourite, setIsFavourite] = useState(false)
+  const [isFavourite, setIsFavourite] = useState(false);
+  const [rateAverage, setRateAverage] = useState(0);
+  const [userCanVote, setUserCanVote] = useState(true);
+  const [showTip, setTip] = useState(false);
+
+  useEffect(() => {
+    const average = getBeerAverage(beer);
+    setRateAverage(average!);
+    checkIfUserHasVoted();
+  }, [beer]);
 
   useEffect(() => {
     const favouriteBeer = favouriteBeers.find((favouriteBeer: BeerCollection) => favouriteBeer.name === beer.name);
     setIsFavourite(!!favouriteBeer);
   }, [favouriteBeers]);
 
+  const checkIfUserHasVoted = () => {
+    if (beer.ratings.length === 0) return;
+
+    const userVoted = beer.ratings.find(
+      (rating: BeerRatings) => rating.userId === user?.email
+    );
+    if (!userVoted) return;
+
+    setUserCanVote(false);
+  };
+
   const handleToggleFavorite = async () => {
     toggleFavouriteBeer(user?.email || '', beer)
+  };
+
+  const ratingCompleted = (rating: number) => {
+    const updatedBeer = {
+      ...beer,
+      ratings: [...beer.ratings, { rate: rating, userId: user?.email || '' }],
+    };
+
+    rateBeer(updatedBeer, rating);
+    setTimeout(() => {
+      setUserCanVote(false);
+      setTip(false);
+      navigation.navigate('BeerScreen', {
+        beer: updatedBeer
+      });
+    }, 500);
   };
 
   return (
@@ -75,18 +117,11 @@ export const BeerScreen = ({ navigation, route }: Props) => {
         />
       </TouchableOpacity>
 
-      {/* Beer Name */}
-      <View style={{ justifyContent: 'center' }}>
-        <Text style={styles.beerName}>
-          {beer.name}
-        </Text>
-      </View>
-
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
 
         {/* Beer Image */}
         <View style={styles.imageMainCointainer}>
-          <View style={{ width: 200 }}>
+          <View style={{ width: 200, paddingVertical: 10 }}>
             <Image
               source={{ uri: beer.image_url }}
               style={{ height: '100%', width: '100%', resizeMode: 'contain' }}
@@ -95,28 +130,97 @@ export const BeerScreen = ({ navigation, route }: Props) => {
 
           <TouchableOpacity
             onPress={handleToggleFavorite}
-            style={{ position: 'absolute', top: 10, right: 10 }}
+            style={{ position: 'absolute', top: 15, right: 15, backgroundColor: 'rgba(0,0,0,0.1)', borderRadius: 50, padding: 5, }}
           >
-            <Icon name={
-              isFavourite
-                ? 'heart'
-                : 'heart-outline'
-            } size={30} color="red" />
+            <Icon
+              name={
+                isFavourite
+                  ? 'heart'
+                  : 'heart-outline'
+              }
+              size={25}
+              style={{ top: 1 }}
+              color={
+                isFavourite
+                  ? 'rgba(206, 47, 47, 0.7)'
+                  : 'white'
+              }
+            />
           </TouchableOpacity>
+        </View>
+
+        {/* Beer Name */}
+        <View style={{ justifyContent: 'center' }}>
+          <Text style={styles.beerName}>
+            {beer.name}
+          </Text>
         </View>
 
         {/* Beer Info */}
         <View style={{ marginHorizontal: 20 }}>
 
+          {/* Rating */}
+          <View style={styles.infoTextContainer}>
+            <Text style={styles.infoTextBold}>
+              Valoración:
+            </Text>
+            <AirbnbRating
+              ratingContainerStyle={{ marginTop: -57 }}
+              starContainerStyle={{ marginTop: 2, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 5 }}
+              isDisabled={true}
+              count={5}
+              reviews={[]}
+              defaultRating={rateAverage}
+              size={15}
+            />
+
+            {
+              userCanVote
+                ? (
+                  <Tooltip
+                    contentStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                    allowChildInteraction
+                    isVisible={showTip}
+                    content={
+                      <AirbnbRating
+                        ratingContainerStyle={{ marginTop: -57 }}
+                        starContainerStyle={{ marginTop: 0, borderRadius: 5 }}
+                        count={5}
+                        reviews={[]}
+                        onFinishRating={ratingCompleted}
+                        defaultRating={0}
+                        size={25}
+                      />
+                    }
+                    onClose={() => setTip(false)}
+                    placement="bottom"
+                  >
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      style={{ borderRadius: 50, padding: 5, }}
+                      onPress={() => setTip(true)}
+                    >
+                      <Text style={{ color: 'rgb(109, 167, 255)', textDecorationLine: 'underline', top: -2, marginLeft: 2 }}>Valorar</Text>
+                    </TouchableOpacity>
+                  </Tooltip>
+                )
+                : <Text style={{ color: 'rgba(255, 255, 255, 0.6)', top: -2, marginLeft: 2, padding: 5 }}>Ya has votado!</Text>
+            }
+
+          </View>
+
+          {/* Votes */}
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoTextBold}>
               Total votos:
             </Text>
             <Text style={styles.infoText}>
-              {beer.votes}
+              {beer.ratings.length}
             </Text>
           </View>
 
+
+          {/* Name */}
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoTextBold}>
               Nombre:
@@ -126,6 +230,7 @@ export const BeerScreen = ({ navigation, route }: Props) => {
             </Text>
           </View>
 
+          {/* Country */}
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoTextBold}>
               País:
@@ -136,6 +241,7 @@ export const BeerScreen = ({ navigation, route }: Props) => {
             </Text>
           </View>
 
+          {/* City */}
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoTextBold}>
               Ciudad:
@@ -145,6 +251,7 @@ export const BeerScreen = ({ navigation, route }: Props) => {
             </Text>
           </View>
 
+          {/* First brewed */}
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoTextBold}>
               Primera elaboración:
@@ -154,6 +261,7 @@ export const BeerScreen = ({ navigation, route }: Props) => {
             </Text>
           </View>
 
+          {/* Type */}
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoTextBold}>
               Tipo:
@@ -163,6 +271,7 @@ export const BeerScreen = ({ navigation, route }: Props) => {
             </Text>
           </View>
 
+          {/* Speciality */}
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoTextBold}>
               Especialidad:
@@ -172,6 +281,7 @@ export const BeerScreen = ({ navigation, route }: Props) => {
             </Text>
           </View>
 
+          {/* Ingredients */}
           <View>
             <Text style={styles.infoTextBold}>
               Ingredientes:
@@ -191,6 +301,7 @@ export const BeerScreen = ({ navigation, route }: Props) => {
 
           </View>
 
+          {/* Description */}
           <View style={{ marginBottom: 40 }}>
             <Text style={styles.infoTextBold}>
               Descripción:
@@ -211,8 +322,8 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontFamily: 'JosefinBold',
-    marginTop: 20,
-    marginBottom: 30,
+    marginTop: 0,
+    marginBottom: 10,
     textAlign: 'center'
   },
   imageMainCointainer: {
@@ -220,7 +331,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    height: 250,
+    height: 270,
     elevation: 7,
     shadowColor: 'white',
     marginBottom: 20,

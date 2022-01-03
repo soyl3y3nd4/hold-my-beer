@@ -11,6 +11,12 @@ export interface BeerCollection {
   speciality: string;
   type: string;
   votes: number;
+  ratings: Array<BeerRatings>;
   origin_country: string;
+}
+
+export interface BeerRatings {
+  rate: number;
+  userId: string;
 }
 

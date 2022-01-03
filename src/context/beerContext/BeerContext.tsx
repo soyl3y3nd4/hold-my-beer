@@ -4,12 +4,14 @@ import { BeerCollection } from '../../interfaces/Beers';
 
 type BeerContextProps = {
   isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   beers: BeerCollection[] | [];
   getBeers: () => void;
   uploadBeer: (beer: BeerCollection) => Promise<boolean>;
   favouriteBeers: BeerCollection[] | [];
   getFavouriteBeers: (email: string) => void;
   toggleFavouriteBeer: (email: string, beer: BeerCollection) => void;
+  rateBeer: (beer: BeerCollection, rate: number) => void;
 };
 
 const initialState = {
@@ -35,7 +37,6 @@ export const BeerProvider = ({ children }: any) => {
   };
 
   const uploadBeer = async (newBeer: BeerCollection) => {
-    setIsLoading(true);
     const ref = await firestore().collection('beers');
     const beer = await ref.doc(newBeer.name).get();
     let isBeerUploaded = true;
@@ -47,7 +48,6 @@ export const BeerProvider = ({ children }: any) => {
       setBeers([...beers, newBeer]);
     }
 
-    setIsLoading(false);
     return isBeerUploaded;
   };
 
@@ -56,7 +56,7 @@ export const BeerProvider = ({ children }: any) => {
     const ref = await firestore().collection('users');
     const userRef = await ref.doc(email).get();
 
-    const favourites = userRef.data()?.favorites;
+    const favourites = userRef.data()?.favourites;
     setFavouriteBeers([...favourites]);
     setIsLoading(false);
   };
@@ -65,32 +65,50 @@ export const BeerProvider = ({ children }: any) => {
     const ref = await firestore().collection('users');
     const userRef = await ref.doc(email).get();
 
-    const favourites = userRef.data()?.favorites;
+    const favourites = userRef.data()?.favourites;
     const isFavorite = favourites?.some((favouriteBeer: BeerCollection) => favouriteBeer.name === beer.name);
 
     if (isFavorite) {
       const filteredFavourites = favourites?.filter((favouriteBeer: BeerCollection) => favouriteBeer.name !== beer.name);
       ref.doc(email).set({
-        favorites: [...filteredFavourites],
+        favourites: [...filteredFavourites],
       }, { merge: true });
       setFavouriteBeers([...filteredFavourites]);
     } else {
       ref.doc(email).set({
-        favorites: [...favourites, beer]
+        favourites: [...favourites, beer]
       }, { merge: true });
       setFavouriteBeers([...favourites, beer]);
     }
   };
 
+  const rateBeer = async (updatedBeer: BeerCollection, rate: number) => {
+    const ref = await firestore().collection('beers');
+
+    ref.doc(updatedBeer.name).set({
+      ratings: [...updatedBeer.ratings]
+    }, { merge: true });
+
+    const beerss = beers.map((beer: BeerCollection) =>
+      beer.name === updatedBeer.name
+        ? updatedBeer
+        : beer
+    );
+
+    setBeers([...beerss]);
+  };
+
   return (
     <BeerContext.Provider value={{
       isLoading,
+      setIsLoading,
       beers,
       getBeers,
       uploadBeer,
       favouriteBeers,
       getFavouriteBeers,
       toggleFavouriteBeer,
+      rateBeer,
     }}>
       {children}
     </BeerContext.Provider>

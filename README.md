@@ -39,13 +39,46 @@ App still in progress
 </TouchableOpacity>
 ```
 
-## Modified package node_modules **@ui-kitten/components/ui/modal** modal.component.js line 108
+## Modified package node_modules **@ui-kitten/components/ui/modal** modal.component.js
 
 ```jsx
-import { LogBox } from 'react-native';
+    this.myEvent = null;
 
-    render() {
-        LogBox.ignoreAllLogs();
-        return null;
+    componentDidMount() {
+        this.myEvent = react_native_1.Dimensions.addEventListener('change', this.onDimensionChange);
+        if (!this.modalId && this.props.visible) {
+            this.show();
+            return;
+        }
     }
+
+    componentWillUnmount() {
+        this.myEvent.remove();
+        this.hide();
+    }
+```
+
+## Modified package node_modules **react-native-walkthrough-tooltip/src/** tooltip.js
+
+```jsx
+  this.myEvent = null;
+
+  componentDidMount() {
+    this.myEvent = Dimensions.addEventListener('change', this.updateWindowDims);
+  }
+
+  componentWillUnmount() {
+    this.myEvent.remove();
+    if (this.interactionPromise) {
+      this.interactionPromise.cancel();
+    }
+  }
+```
+
+## Modified package node_modules **react-native-ratings/dist/components** Star.js and the end of the file
+
+```jsx
+starStyle: {
+  margin: 1.25;
+}
 ```

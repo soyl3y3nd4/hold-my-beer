@@ -1,7 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Image, ImageBackground, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { AirbnbRating } from 'react-native-ratings';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { getBeerAverage } from '../helpers/helpers';
 import { BeerCollection } from '../interfaces/Beers';
 import { FadeInImage } from './FadeInImage';
 
@@ -13,6 +15,12 @@ interface Props {
 
 export const ListItemTopBeer = ({ item, index, top = true }: Props) => {
   const navigation = useNavigation<any>();
+  const [rateAverage, setRateAverage] = useState(0);
+
+  useEffect(() => {
+    const average = getBeerAverage(item);
+    setRateAverage(average!);
+  }, [item]);
 
   return (
     <TouchableOpacity
@@ -77,8 +85,13 @@ export const ListItemTopBeer = ({ item, index, top = true }: Props) => {
         <View style={{ width: '60%', paddingLeft: 20 }}>
 
           <View style={styles.infoTextContainer}>
-            <Text style={styles.infoTextBold}>Total votos: </Text>
-            <Text style={styles.infoText}>{item.votes}</Text>
+            <Text style={styles.infoTextBold}>País: </Text>
+            <Text style={styles.infoText}>{item.origin_country}</Text>
+          </View>
+
+          <View style={styles.infoTextContainer}>
+            <Text style={styles.infoTextBold}>Ciudad: </Text>
+            <Text style={styles.infoText}>{item.city}</Text>
           </View>
 
           <View style={styles.infoTextContainer}>
@@ -86,19 +99,29 @@ export const ListItemTopBeer = ({ item, index, top = true }: Props) => {
             <Text style={styles.infoText}>{item.abv}%</Text>
           </View>
 
-          <View style={styles.ingredientWrapper}>
-            <Text style={styles.infoTextBold}>Ingredientes: </Text>
-            {item.ingredients.map((ingredient, i) => (
-              <Text key={ingredient + i} style={styles.textIngredient}>
-                {ingredient}{i === item.ingredients.length - 1 ? '' : ','}
-              </Text>
-            ))}
+          <View style={styles.infoTextContainer}>
+            <Text style={styles.infoTextBold}>Tipo: </Text>
+            <Text style={styles.infoText}>{item.type}</Text>
           </View>
 
           <View style={styles.infoTextContainer}>
-            <Text style={styles.infoTextBold}>Origen: </Text>
-            <Text style={styles.infoText}>{item.origin_country}</Text>
+            <Text style={styles.infoTextBold}>Especialidad: </Text>
+            <Text style={styles.infoText}>{item.speciality}</Text>
           </View>
+
+          <View style={styles.infoTextContainer}>
+            <Text style={styles.infoTextBold}>Valoración: </Text>
+            <AirbnbRating
+              ratingContainerStyle={{ marginTop: -53 }}
+              starContainerStyle={{ marginTop: 2, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 5 }}
+              isDisabled={true}
+              count={5}
+              reviews={[]}
+              defaultRating={rateAverage}
+              size={12}
+            />
+          </View>
+
         </View>
 
         <TouchableOpacity
