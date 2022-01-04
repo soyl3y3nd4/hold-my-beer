@@ -37,17 +37,17 @@ export const FavouritesScreen = ({ navigation }: Props) => {
       />
 
       <ScrollView contentContainerStyle={{ alignItems: 'center', flexGrow: 1 }}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(221, 204, 157, 0.5)', width: '100%', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', width: '100%', alignItems: 'center', justifyContent: 'center' }}>
 
           {favouriteBeers.length > 0
             && favouriteBeers.map((favouriteBeer: BeerCollection) => (
-              <Text key={favouriteBeer.name} style={{ fontSize: 25, color: '#000000' }}>
+              <Text key={favouriteBeer.name} style={{ fontSize: 25, color: 'white' }}>
                 {favouriteBeer.name}
               </Text>
             ))
           }
           {!isLoading && favouriteBeers.length === 0 &&
-            <Text style={{ fontSize: 25, color: '#000000' }}>
+            <Text style={{ fontSize: 25, color: 'white' }}>
               Empty Favourites
             </Text>
           }

@@ -111,112 +111,26 @@ export const beer_types = [
     id: 'ale',
     label: 'Ale',
     value: 'Ale',
-    types: [
-      {
-        id: 'brown_ale',
-        label: 'Brown Ale',
-        value: 'Brown Ale',
-      },
-      {
-        id: 'trap_abadia',
-        label: 'Trapenses y Abadía',
-        value: 'Trapenses y Abadía',
-      },
-      {
-        id: 'mild_ale',
-        label: 'Mild Ale',
-        value: 'Mild Ale',
-      },
-      {
-        id: 'old_ale',
-        label: 'Old Ale',
-        value: 'Old Ale',
-      },
-      {
-        id: 'ipa',
-        label: 'Indian Pale Ale (IPA)',
-        value: 'Indian Pale Ale (IPA)',
-      },
-      {
-        id: 'stout',
-        label: 'Stout',
-        value: 'Stout',
-      },
-      {
-        id: 'porter',
-        label: 'Porter',
-        value: 'Porter',
-      },
-    ]
   },
   {
     id: 'lager',
     label: 'Lager',
     value: 'Lager',
-    types: [
-      {
-        id: 'bock',
-        name: 'Bock',
-        value: 'Bock',
-      },
-      {
-        id: 'dark',
-        name: 'Negra',
-        value: 'Negra',
-      },
-      {
-        id: 'pale_lager',
-        name: 'Pale Lager',
-        value: 'Pale Lager',
-      },
-      {
-        id: 'pilsner',
-        name: 'Pilsner',
-        value: 'Pilsner',
-      },
-    ]
   },
   {
     id: 'hybrid',
-    label: 'Híbridas',
-    value: 'Híbridas',
-    types: [
-      {
-        id: 'altbier_kosch',
-        name: 'Altbier y Kölsch',
-        value: 'Altbier y Kölsch',
-      },
-      {
-        id: 'fruits_vegs',
-        name: 'Frutas y Verduras',
-        value: 'Frutas y Verduras',
-      },
-      {
-        id: 'herbs_spices',
-        name: 'Hiervas y Especias',
-        value: 'Hiervas y Especias',
-      },
-      {
-        id: 'old_wood',
-        name: 'Envejecidas en madera',
-        value: 'Envejecidas en madera',
-      },
-      {
-        id: 'old_smoke',
-        name: 'Ahumadas',
-        value: 'Ahumadas',
-      },
-      {
-        id: 'champagne',
-        name: 'Champagne',
-        value: 'Champagne',
-      },
-    ]
+    label: 'Híbrida',
+    value: 'Híbrida',
   },
   {
     id: 'wild',
     label: 'Salvaje',
     value: 'Salvaje'
+  },
+  {
+    id: 'trap',
+    label: 'Trapense',
+    value: 'Trapense',
   },
 ];
 
@@ -280,7 +194,7 @@ export const specialities = {
       value: 'Pilsner',
     },
   ],
-  'Híbridas': [
+  'Híbrida': [
     {
       id: 'altbier_kosch',
       label: 'Altbier y Kölsch',
@@ -318,5 +232,57 @@ export const specialities = {
       label: 'Sin Especialidad',
       value: 'Sin Especialidad',
     },
-  ]
+  ],
+  'Trapense': [
+    {
+      id: 'dubble',
+      label: 'Dubbel',
+      value: 'Dubbel',
+    },
+    {
+      id: 'tripel',
+      label: 'Tripel',
+      value: 'Tripel',
+    },
+    {
+      id: 'belgian_dark_s_l',
+      label: 'Belgian Dark Strong Ale',
+      value: 'Belgian Dark Strong Ale',
+    },
+    {
+      id: 'witbier',
+      label: 'Witbier',
+      value: 'Witbier',
+    },
+    {
+      id: 'flanders_red',
+      label: 'Flanders red',
+      value: 'Flanders red',
+    },
+    {
+      id: 'oud_bruin',
+      label: 'Oud bruin',
+      value: 'Oud bruin',
+    },
+    {
+      id: 'belgian_blond_ale',
+      label: 'Belgian Blond Ale',
+      value: 'Belgian Blond Ale',
+    },
+    {
+      id: 'belgian_pale_ale',
+      label: 'Belgian Pale Ale',
+      value: 'Belgian Pale Ale',
+    },
+    {
+      id: 'lambic',
+      label: 'Lambic',
+      value: 'Lambic',
+    },
+    {
+      id: 'saison',
+      label: 'Saison',
+      value: 'Saison',
+    },
+  ],
 }

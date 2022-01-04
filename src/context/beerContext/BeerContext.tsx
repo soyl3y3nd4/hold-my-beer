@@ -15,7 +15,9 @@ type BeerContextProps = {
   getFavouriteBeers: (email: string) => void;
   toggleFavouriteBeer: (email: string, beer: BeerCollection) => void;
   userNewBeers: BeerCollection[] | [];
-  getUserNewBeers: (email: string) => void;
+  userRatedBeers: BeerCollection[] | [];
+  getUserNewBeers: () => Promise<BeerCollection[] | []>;
+  getUserRatedBeers: () => Promise<BeerCollection[] | []>;
   rateBeer: (beer: BeerCollection) => void;
 };
 
@@ -23,6 +25,8 @@ const initialState = {
   isLoading: true,
   beers: [],
   favouriteBeers: [],
+  userNewBeers: [],
+  userRatedBeers: [],
 };
 
 export const BeerContext = createContext(initialState as BeerContextProps);
@@ -32,6 +36,7 @@ export const BeerProvider = ({ children }: any) => {
   const [beers, setBeers] = useState<BeerCollection[]>([]);
   const [favouriteBeers, setFavouriteBeers] = useState<BeerCollection[]>([]);
   const [userNewBeers, setUserNewBeers] = useState<BeerCollection[]>([]);
+  const [userRatedBeers, setUserRatedBeers] = useState<BeerCollection[]>([]);
 
   const getBeers = async () => {
     setIsLoading(true);
@@ -40,6 +45,10 @@ export const BeerProvider = ({ children }: any) => {
       const beersArray = resp.docs.map((beer) => beer.data());
 
       setBeers([...beersArray] as BeerCollection[]);
+      const newBeers = await getUserNewBeers();
+      const ratedBeers = await getUserRatedBeers();
+      setUserNewBeers([...newBeers]);
+      setUserRatedBeers([...ratedBeers]);
     } catch (error) {
       console.warn(error);
     }
@@ -106,23 +115,57 @@ export const BeerProvider = ({ children }: any) => {
           new_beers: [...userBeers, beer],
         }, { merge: true }
       );
-
+      setUserNewBeers([...userBeers, beer]);
     } catch (error) {
       console.warn(error);
     }
   };
 
-  const getUserNewBeers = async (email: string) => {
+  const getUserNewBeers = async (): Promise<BeerCollection[]> => {
     setIsLoading(true);
     try {
+      const email = auth().currentUser?.email || '';
       const userRef = await firestore().collection('users').doc(email).get();
-
       const newBeers = userRef.data()?.new_beers;
-      setUserNewBeers([...newBeers]);
+      const beersIds = newBeers?.map((beer: BeerCollection) => beer.name);
+
+      const resp = await firestore().collection('beers').get();
+      const beersArray = resp.docs.map((beer) => beer.data()) as BeerCollection[];
+
+      const beersMatch = beersArray.filter((beer: BeerCollection) => beersIds.includes(beer.name));
+      setIsLoading(false);
+
+      if (!beersMatch) return [];
+      return beersMatch;
+
     } catch (error) {
       console.warn(error);
+      setIsLoading(false);
+      return [];
     }
-    setIsLoading(false);
+  };
+
+  const getUserRatedBeers = async (): Promise<BeerCollection[]> => {
+    setIsLoading(true);
+    try {
+      const email = auth().currentUser?.email || '';
+      const userRef = await firestore().collection('users').doc(email).get();
+      const votedBeers = userRef.data()?.votes;
+      const beersIds = votedBeers?.map((beer: BeerCollection) => beer.name);
+
+      const resp = await firestore().collection('beers').get();
+      const beersArray = resp.docs.map((beer) => beer.data()) as BeerCollection[];
+
+      const beersMatch = beersArray.filter((beer: BeerCollection) => beersIds.includes(beer.name));
+      setIsLoading(false);
+
+      if (!beersMatch) return [];
+      return beersMatch;
+    } catch (error) {
+      console.warn(error);
+      setIsLoading(false);
+      return [];
+    }
   };
 
   const getFavouriteBeers = async (email: string) => {
@@ -171,6 +214,8 @@ export const BeerProvider = ({ children }: any) => {
         ratings: [...updatedBeer.ratings]
       }, { merge: true });
 
+      setDbUserRatedBeers(updatedBeer);
+
       const beerss = beers.map((beer: BeerCollection) =>
         beer.name === updatedBeer.name
           ? updatedBeer
@@ -178,6 +223,22 @@ export const BeerProvider = ({ children }: any) => {
       );
 
       setBeers([...beerss]);
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
+  const setDbUserRatedBeers = async (beer: BeerCollection) => {
+    try {
+      const email = auth().currentUser?.email || '';
+      const ref = await firestore().collection('users');
+      const userRef = await ref.doc(email).get();
+
+      const votedBeers = userRef.data()?.votes;
+
+      ref.doc(email).set({
+        votes: [...votedBeers, beer],
+      }, { merge: true });
     } catch (error) {
       console.warn(error);
     }
@@ -197,6 +258,8 @@ export const BeerProvider = ({ children }: any) => {
       userNewBeers,
       getUserNewBeers,
       rateBeer,
+      getUserRatedBeers,
+      userRatedBeers,
     }}>
       {children}
     </BeerContext.Provider>

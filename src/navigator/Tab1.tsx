@@ -1,15 +1,18 @@
 import React from 'react';
 
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import { TopBeers } from '../screens/TopBeers';
 import { BeerCollection } from '../interfaces/Beers';
 import { BeerScreen } from '../screens/BeerScreen';
 import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
-
+const TransitionScreenOptions = {
+  ...TransitionPresets.SlideFromRightIOS, // This is where the transition happens
+  // ...TransitionPresets.ModalFadeTransition, // This is where the transition happens
+};
 
 export type RootStackParams = {
   TopBeers: undefined,
-  BeerScreen: { beer: BeerCollection },
+  BeerScreen: { beer: BeerCollection, url: string },
 };
 
 interface Props {
@@ -22,6 +25,7 @@ const Tab1 = ({ navigation }: Props) => {
   return (
     <Stack.Navigator
       screenOptions={{
+        ...TransitionScreenOptions,
         headerShown: false,
         cardStyle: {
           backgroundColor: 'white',

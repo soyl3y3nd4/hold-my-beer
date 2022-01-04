@@ -15,8 +15,8 @@ interface Props {
   navigation: DrawerNavigationHelpers;
 };
 
-export const VotesScreen = ({ navigation }: Props) => {
-  const { beers, getBeers, getUserRatedBeers, isLoading } = useContext(BeerContext);
+export const UserCreatedBeersScreen = ({ navigation }: Props) => {
+  const { beers, getBeers, getUserNewBeers, isLoading } = useContext(BeerContext);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isFocused = useIsFocused();
@@ -33,7 +33,7 @@ export const VotesScreen = ({ navigation }: Props) => {
   }, [isFocused]);
 
   const getCreatedBeers = async () => {
-    const beerss = await getUserRatedBeers();
+    const beerss = await getUserNewBeers();
     setUserBeers(beerss);
   };
 
@@ -88,7 +88,7 @@ export const VotesScreen = ({ navigation }: Props) => {
         columnWrapperStyle={{ justifyContent: 'space-between' }}
         ListHeaderComponent={(
           <View style={{ flexDirection: 'row', paddingVertical: 25 }}>
-            <Text style={{ fontFamily: 'JosefinBold', fontSize: 23, color: 'rgba(255,255,255, 1)', }}>Cervezas Valoradas</Text>
+            <Text style={{ fontFamily: 'JosefinBold', fontSize: 23, color: 'rgba(255,255,255, 1)', }}>Cervezas Agregadas</Text>
           </View>
         )}
         ListFooterComponent={(<View style={{ height: 80 }} />)}

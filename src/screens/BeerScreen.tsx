@@ -20,9 +20,10 @@ import { getBeerAverage, waitFor } from '../helpers/helpers';
 
 interface Props extends StackScreenProps<RootStackParams, 'BeerScreen'> { };
 
-export const BeerScreen = ({ navigation, route }: Props) => {
+export const BeerScreen = ({ route, navigation }: Props) => {
   const { top } = useSafeAreaInsets();
-  const { beer } = route.params;
+  // const navigation = useNavigation<any>();
+  const { beer, url } = route.params;
 
   const { user } = useContext(AuthContext);
   const { favouriteBeers, toggleFavouriteBeer, rateBeer } = useContext(BeerContext);
@@ -73,7 +74,8 @@ export const BeerScreen = ({ navigation, route }: Props) => {
     setUserCanVote(false);
 
     navigation.navigate('BeerScreen', {
-      beer: updatedBeer
+      beer: updatedBeer,
+      url,
     });
   };
 
@@ -111,7 +113,15 @@ export const BeerScreen = ({ navigation, route }: Props) => {
           ...styles.backButton,
           top: top + 12,
         }}
-        onPress={() => navigation.goBack()}
+        onPress={() => {
+          if (url?.length > 0) {
+            navigation.reset({ routes: [{ name: 'TopBeers' }] });
+            // @ts-ignore
+            navigation.navigate('BottomTabsNavigator', { screen: url });
+          } else {
+            navigation.navigate('TopBeers');
+          }
+        }}
       >
         <Icon
           name="arrow-back-outline"
@@ -133,7 +143,7 @@ export const BeerScreen = ({ navigation, route }: Props) => {
 
           <TouchableOpacity
             onPress={handleToggleFavorite}
-            style={{ position: 'absolute', top: 15, right: 15, backgroundColor: 'rgba(0,0,0,0.1)', borderRadius: 50, padding: 5, }}
+            style={{ position: 'absolute', top: 15, right: 15, backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: 50, padding: 5, }}
           >
             <Icon
               name={

@@ -1,24 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { FindBeer } from '../screens/FindBeer';
-import { NewBeer } from '../screens/NewBeer';
 import { Dashboard } from '../screens/Dashboard';
 import Icon from 'react-native-vector-icons/Ionicons';
 const AnimatedIcon = Animated.createAnimatedComponent(Icon);
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 const AnimatedMaterialIcon = Animated.createAnimatedComponent(MaterialCommunityIcon);
 
-import { TopBeers } from '../screens/TopBeers';
-import { DrawerContentComponentProps } from '@react-navigation/drawer';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { useTabAnimation } from '../hooks/useTabAnimation';
 import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
-import Tab1 from './Tab1';
-import Tab2 from './Tab2';
+
 import { FavouritesScreen } from '../screens/FavouritesScreen';
 import { VotesScreen } from '../screens/VotesScreen';
+import { UserCreatedBeersScreen } from '../screens/UserCreatedBeersScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -48,11 +44,20 @@ const BottomTabsNavigator = ({ navigation }: Props) => {
     iconAnimation: iconAnimation2,
     backgroundAnimation: backgroundAnimation2
   } = useTabAnimation();
+  const {
+    boxAnimation: boxAnimation3,
+    goIdle: goIdle3,
+    moveTop: moveTop3,
+    iconAnimation: iconAnimation3,
+    smallIconAnimation,
+    backgroundAnimation: backgroundAnimation3,
+  } = useTabAnimation();
 
   useEffect(() => {
     moveTop();
     goIdle1();
     goIdle2();
+    goIdle3();
   }, []);
 
   return (
@@ -110,7 +115,7 @@ const BottomTabsNavigator = ({ navigation }: Props) => {
           tabBarIcon: ({ focused }) => (
             <Animated.View style={[styles.box, boxAnimation2, backgroundAnimation2]}>
               <AnimatedMaterialIcon
-                name="thumb-up-outline"
+                name="account-star-outline"
                 style={[iconAnimation2]}
                 color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
               />
@@ -120,6 +125,28 @@ const BottomTabsNavigator = ({ navigation }: Props) => {
         }}
       />
 
+      <Tab.Screen
+        name="UserBeersScreen"
+        children={() => <UserCreatedBeersScreen navigation={navigation} />}
+        listeners={{ focus: () => moveTop3(), blur: () => goIdle3() }}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Animated.View style={[styles.box, boxAnimation3, backgroundAnimation3]}>
+              <AnimatedMaterialIcon
+                name="account-tie"
+                style={[iconAnimation3, { position: 'absolute', bottom: 10, left: 6 }]}
+                color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
+              />
+              <AnimatedMaterialIcon
+                name="glass-mug-variant"
+                style={[smallIconAnimation, { position: 'absolute', bottom: 20 }]}
+                color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
+              />
+            </Animated.View>
+          ),
+          lazy: true,
+        }}
+      />
     </Tab.Navigator>
   );
 };

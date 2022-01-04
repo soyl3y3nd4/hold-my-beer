@@ -61,6 +61,10 @@ App still in progress
 ## Modified package node_modules **react-native-walkthrough-tooltip/src/** tooltip.js
 
 ```jsx
+  import { LogBox } from 'react-native';
+
+  LogBox.ignoreAllLogs()
+
   this.myEvent = null;
 
   componentDidMount() {

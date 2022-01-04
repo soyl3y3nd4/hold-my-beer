@@ -7,6 +7,8 @@ export const useTabAnimation = () => {
   const width = useSharedValue(50);
   const height = useSharedValue(50);
   const fontSize = useSharedValue(20);
+  const smallfontSize = useSharedValue(13);
+  const right = useSharedValue(7);
 
   // creating worklet via useAnimatedStyle, and incorporating the withTiming method
   const boxAnimation = useAnimatedStyle(() => {
@@ -25,10 +27,17 @@ export const useTabAnimation = () => {
     }
   });
 
+  const smallIconAnimation = useAnimatedStyle(() => {
+    return {
+      fontSize: withTiming(smallfontSize.value, { duration: 250, easing: Easing.bezier(0.175, 0.885, 0.32, 1.275), }),
+      right: withTiming(right.value, { duration: 250, easing: Easing.bezier(0.175, 0.885, 0.32, 1.275), }),
+    }
+  });
+
   const backgroundColor = useSharedValue(false);
 
   const backgroundAnimation = useAnimatedStyle(() => ({
-    backgroundColor: backgroundColor.value ? 'rgba(0, 0, 0, 0.6)' : 'rgba(211, 157, 0, 1)',
+    backgroundColor: backgroundColor.value ? 'rgba(255, 255, 255, 0.3)' : 'rgba(211, 157, 0, 1)',
   }), []);
 
   const moveTop = () => {
@@ -38,6 +47,8 @@ export const useTabAnimation = () => {
     height.value = 50;
     width.value = 50;
     fontSize.value = 27;
+    smallfontSize.value = 15;
+    right.value = 8;
     backgroundColor.value = false;
   };
   const goIdle = () => {
@@ -47,6 +58,8 @@ export const useTabAnimation = () => {
     height.value = 40;
     width.value = 40;
     fontSize.value = 20;
+    smallfontSize.value = 10;
+    right.value = 7;
     backgroundColor.value = true;
   };
 
@@ -56,6 +69,7 @@ export const useTabAnimation = () => {
     goIdle,
     boxAnimation,
     iconAnimation,
+    smallIconAnimation,
     backgroundAnimation,
   };
 };

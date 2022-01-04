@@ -18,6 +18,7 @@ export const TopBeers = ({ navigation }: Props) => {
   const { height, width } = useWindowDimensions();
 
   useEffect(() => {
+    if (beers.length > 0) return;
     getBeers();
   }, []);
 
