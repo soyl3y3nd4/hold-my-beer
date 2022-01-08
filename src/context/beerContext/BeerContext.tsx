@@ -12,7 +12,7 @@ type BeerContextProps = {
   uploadBeer: (beer: BeerCollection) => Promise<boolean>;
   uploadImageBeer: (image: Asset) => Promise<string>;
   favouriteBeers: BeerCollection[] | [];
-  getFavouriteBeers: (email: string) => void;
+  getFavouriteBeers: () => void;
   toggleFavouriteBeer: (email: string, beer: BeerCollection) => void;
   userNewBeers: BeerCollection[] | [];
   userRatedBeers: BeerCollection[] | [];
@@ -41,7 +41,7 @@ export const BeerProvider = ({ children }: any) => {
   const getBeers = async () => {
     setIsLoading(true);
     try {
-      const resp = await firestore().collection('beers').orderBy('votes', 'desc').limit(50).get();
+      const resp = await firestore().collection('beers').orderBy('votes', 'desc').get();
       const beersArray = resp.docs.map((beer) => beer.data());
 
       setBeers([...beersArray] as BeerCollection[]);
@@ -135,9 +135,13 @@ export const BeerProvider = ({ children }: any) => {
       const beersMatch = beersArray.filter((beer: BeerCollection) => beersIds.includes(beer.name));
       setIsLoading(false);
 
-      if (!beersMatch) return [];
-      return beersMatch;
+      if (!beersMatch) {
+        setUserNewBeers([]);
+        return [];
+      }
 
+      setUserNewBeers([...beersMatch]);
+      return beersMatch;
     } catch (error) {
       console.warn(error);
       setIsLoading(false);
@@ -159,7 +163,12 @@ export const BeerProvider = ({ children }: any) => {
       const beersMatch = beersArray.filter((beer: BeerCollection) => beersIds.includes(beer.name));
       setIsLoading(false);
 
-      if (!beersMatch) return [];
+      if (!beersMatch) {
+        setUserRatedBeers([]);
+        return [];
+      }
+
+      setUserRatedBeers([...beersMatch]);
       return beersMatch;
     } catch (error) {
       console.warn(error);
@@ -168,13 +177,25 @@ export const BeerProvider = ({ children }: any) => {
     }
   };
 
-  const getFavouriteBeers = async (email: string) => {
+  const getFavouriteBeers = async () => {
     setIsLoading(true);
     try {
+      const email = auth().currentUser?.email || '';
       const userRef = await firestore().collection('users').doc(email).get();
+      const favouriteBeers = userRef.data()?.favourites;
+      const beersIds = favouriteBeers?.map((beer: BeerCollection) => beer.name);
 
-      const favourites = userRef.data()?.favourites;
-      setFavouriteBeers([...favourites]);
+      const resp = await firestore().collection('beers').get();
+      const beersArray = resp.docs.map((beer) => beer.data()) as BeerCollection[];
+
+      const beersMatch = beersArray.filter((beer: BeerCollection) => beersIds.includes(beer.name));
+
+      if (!beersMatch) {
+        setFavouriteBeers([]);
+        return [];
+      }
+
+      setFavouriteBeers([...beersMatch]);
     } catch (error) {
       console.warn(error);
     }

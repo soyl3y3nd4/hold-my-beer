@@ -49,7 +49,7 @@ export const TopBeers = ({ navigation }: Props) => {
               colors={['white', 'rgb(219, 192, 118)']}
             />
           }
-          data={beers}
+          data={beers.slice(0, 50)}
           keyExtractor={(beer: any) => beer.name!}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={(

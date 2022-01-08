@@ -22,7 +22,6 @@ interface Props extends StackScreenProps<RootStackParams, 'BeerScreen'> { };
 
 export const BeerScreen = ({ route, navigation }: Props) => {
   const { top } = useSafeAreaInsets();
-  // const navigation = useNavigation<any>();
   const { beer, url } = route.params;
 
   const { user } = useContext(AuthContext);
@@ -113,15 +112,7 @@ export const BeerScreen = ({ route, navigation }: Props) => {
           ...styles.backButton,
           top: top + 12,
         }}
-        onPress={() => {
-          if (url?.length > 0) {
-            navigation.reset({ routes: [{ name: 'TopBeers' }] });
-            // @ts-ignore
-            navigation.navigate('BottomTabsNavigator', { screen: url });
-          } else {
-            navigation.navigate('TopBeers');
-          }
-        }}
+        onPress={() => navigation.goBack()}
       >
         <Icon
           name="arrow-back-outline"

@@ -1,16 +1,18 @@
 import React, { useContext } from 'react';
-import { createDrawerNavigator, DrawerContentComponentProps, DrawerContentScrollView } from '@react-navigation/drawer';
-import { ProfileScreen } from '../screens/ProfileScreen';
-
 import { View, Text, Image, TouchableOpacity, StyleSheet, useWindowDimensions, ImageBackground } from 'react-native';
-import { AuthContext } from '../context/authContext/AuthContext';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { createDrawerNavigator, DrawerContentComponentProps, DrawerContentScrollView } from '@react-navigation/drawer'
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { NewBeer } from '../screens/NewBeer';
-import { Dashboard } from '../screens/Dashboard';
+import Icon from 'react-native-vector-icons/Ionicons';
+;
 import Tab1 from './Tab1';
 import Tab2 from './Tab2';
-import BottomTabsNavigator from './BottomTabsNavigator';
+import Tab3 from './Tab3';
+
+import { AuthContext } from '../context/authContext/AuthContext';
+import { ProfileScreen } from '../screens/ProfileScreen';
+import { NewBeer } from '../screens/NewBeer';
+import { Dashboard } from '../screens/Dashboard';
+import { SettingsScreen } from '../screens/SettingsScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -24,18 +26,20 @@ const DrawerNavigator = () => {
         headerShown: false
       }}
     >
-      <Drawer.Screen name="BottomTabsNavigator" component={BottomTabsNavigator} />
+      <Drawer.Screen name="Dashboard" component={Dashboard} />
       <Drawer.Screen name="Tab1" component={Tab1} />
       <Drawer.Screen name="Tab2" component={Tab2} />
-      <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Drawer.Screen name="Tab3" component={Tab3} />
       <Drawer.Screen name="NewBeer" component={NewBeer} />
+      <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Drawer.Screen name="SettingsScreen" component={SettingsScreen} />
     </Drawer.Navigator>
   );
 };
 
 export default DrawerNavigator;
 
-const MenuContent = ({ navigation }: DrawerContentComponentProps) => {
+const MenuContent = ({ navigation, state }: DrawerContentComponentProps) => {
   const { user, logOut } = useContext(AuthContext);
   return (
     <DrawerContentScrollView contentContainerStyle={{ flex: 1 }}>
@@ -98,11 +102,11 @@ const MenuContent = ({ navigation }: DrawerContentComponentProps) => {
         <View>
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() => navigation.navigate('BottomTabsNavigator')}
-            style={styles.menuButton}
+            onPress={() => navigation.navigate('Dashboard')}
+            style={[styles.menuButton]}
           >
-            <Icon name="home-outline" size={30} color="rgba(0, 0, 0, 0.5)" />
-            <Text style={styles.menuItem}>Panel Principal</Text>
+            <Icon name="home-outline" size={30} color={state.index === 0 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
+            <Text style={[styles.menuItem, state.index === 0 ? styles.menuItemActive : null]}>Panel Principal</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -110,8 +114,8 @@ const MenuContent = ({ navigation }: DrawerContentComponentProps) => {
             onPress={() => navigation.navigate('Tab1')}
             style={styles.menuButton}
           >
-            <MaterialIcon name="format-vertical-align-top" size={30} color="rgba(0, 0, 0, 0.5)" />
-            <Text style={styles.menuItem}>Top Cervezas</Text>
+            <MaterialIcon name="format-vertical-align-top" size={30} color={state.index === 1 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
+            <Text style={[styles.menuItem, state.index === 1 ? styles.menuItemActive : null]}>Top Cervezas</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -119,8 +123,17 @@ const MenuContent = ({ navigation }: DrawerContentComponentProps) => {
             onPress={() => navigation.navigate('Tab2')}
             style={styles.menuButton}
           >
-            <Icon name="search" size={30} color="rgba(0, 0, 0, 0.5)" />
-            <Text style={styles.menuItem}>Buscar Cerveza</Text>
+            <Icon name="search" size={30} color={state.index === 2 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
+            <Text style={[styles.menuItem, state.index === 2 ? styles.menuItemActive : null]}>Buscar Cerveza</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => navigation.navigate('Tab3')}
+            style={styles.menuButton}
+          >
+            <Icon name="heart-outline" size={30} color={state.index === 3 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
+            <Text style={[styles.menuItem, state.index === 3 ? styles.menuItemActive : null]}>Favoritas</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -128,8 +141,8 @@ const MenuContent = ({ navigation }: DrawerContentComponentProps) => {
             onPress={() => navigation.navigate('NewBeer')}
             style={styles.menuButton}
           >
-            <Icon name="beer-outline" size={30} color="rgba(0, 0, 0, 0.5)" />
-            <Text style={styles.menuItem}>Nueva Cerveza</Text>
+            <Icon name="beer-outline" size={30} color={state.index === 4 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
+            <Text style={[styles.menuItem, state.index === 4 ? styles.menuItemActive : null]}>Nueva Cerveza</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -137,16 +150,16 @@ const MenuContent = ({ navigation }: DrawerContentComponentProps) => {
             onPress={() => navigation.navigate('ProfileScreen')}
             style={styles.menuButton}
           >
-            <Icon name="person-outline" size={30} color="rgba(0, 0, 0, 0.5)" />
-            <Text style={styles.menuItem}>Perfil</Text>
+            <Icon name="person-outline" size={30} color={state.index === 5 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
+            <Text style={[styles.menuItem, state.index === 5 ? styles.menuItemActive : null]}>Perfil</Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() => navigation.navigate('ProfileScreen')}
+            onPress={() => navigation.navigate('SettingsScreen')}
             style={styles.menuButton}
           >
-            <Icon name="settings-outline" size={30} color="rgba(0, 0, 0, 0.5)" />
-            <Text style={styles.menuItem}>Ajustes</Text>
+            <Icon name="settings-outline" size={30} color={state.index === 6 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
+            <Text style={[styles.menuItem, state.index === 6 ? styles.menuItemActive : null]}>Ajustes</Text>
           </TouchableOpacity>
         </View>
         <View style={{ flex: 1, justifyContent: 'flex-end' }}>
@@ -159,7 +172,7 @@ const MenuContent = ({ navigation }: DrawerContentComponentProps) => {
             }}>
 
             <Icon name="log-in-outline" size={30} color="rgba(0, 0, 0, 0.5)" />
-            <Text style={styles.menuItem}>Salir</Text>
+            <Text style={[styles.menuItem]}>Salir</Text>
           </TouchableOpacity>
 
         </View>
@@ -241,6 +254,9 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
+  },
+  menuItemActive: {
+    color: 'rgb(226, 189, 0)',
   },
   menuItem: {
     fontFamily: 'Readex',

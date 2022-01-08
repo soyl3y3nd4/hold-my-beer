@@ -37,7 +37,7 @@ export const useTabAnimation = () => {
   const backgroundColor = useSharedValue(false);
 
   const backgroundAnimation = useAnimatedStyle(() => ({
-    backgroundColor: backgroundColor.value ? 'rgba(255, 255, 255, 0.3)' : 'rgba(211, 157, 0, 1)',
+    backgroundColor: backgroundColor.value ? 'rgba(0, 0, 0, 1)' : 'rgba(211, 157, 0, 1)',
   }), []);
 
   const moveTop = () => {

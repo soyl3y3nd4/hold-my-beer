@@ -62,7 +62,7 @@ const BottomTabsNavigator = ({ navigation }: Props) => {
 
   return (
     <Tab.Navigator
-      initialRouteName="Dashboard"
+      initialRouteName="FavouritesScreen"
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarShowLabel: false,
@@ -107,7 +107,7 @@ const BottomTabsNavigator = ({ navigation }: Props) => {
           lazy: true,
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="VotesScreen"
         children={() => <VotesScreen navigation={navigation} />}
         listeners={{ focus: () => moveTop2(), blur: () => goIdle2() }}
@@ -134,19 +134,19 @@ const BottomTabsNavigator = ({ navigation }: Props) => {
             <Animated.View style={[styles.box, boxAnimation3, backgroundAnimation3]}>
               <AnimatedMaterialIcon
                 name="account-tie"
-                style={[iconAnimation3, { position: 'absolute', bottom: 10, left: 6 }]}
+                style={[iconAnimation3, { position: 'absolute', bottom: 10, left: 6, zIndex: 14 }]}
                 color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
               />
               <AnimatedMaterialIcon
                 name="glass-mug-variant"
-                style={[smallIconAnimation, { position: 'absolute', bottom: 20 }]}
+                style={[smallIconAnimation, { position: 'absolute', bottom: 20, zIndex: 14 }]}
                 color={focused ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.6)'}
               />
             </Animated.View>
           ),
           lazy: true,
         }}
-      />
+      /> */}
     </Tab.Navigator>
   );
 };
@@ -173,6 +173,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 904,
   }
 });
 
