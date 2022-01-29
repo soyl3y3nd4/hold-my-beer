@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { View, FlatList, RefreshControl, Text, ImageBackground, useWindowDimensions } from 'react-native';
+import { View, FlatList, RefreshControl, Text, ImageBackground, useWindowDimensions, Dimensions } from 'react-native';
 
 import { ListItemTopBeer } from '../components/ListItemTopBeer';
 import { DrawerToggleButton } from '../components/DrawerToggleButton';
@@ -39,6 +39,9 @@ export const TopBeers = ({ navigation }: Props) => {
             paddingHorizontal: 15,
             backgroundColor: 'rgba(221, 204, 157, 0.2)',
             width: '100%',
+          }}
+          contentContainerStyle={{
+            alignItems: Dimensions.get('screen').width > 500 ? 'flex-start' : 'center',
           }}
           refreshControl={
             <RefreshControl

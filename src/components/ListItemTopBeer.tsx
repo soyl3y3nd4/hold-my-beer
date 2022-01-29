@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react'
-import { Image, ImageBackground, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Image, ImageBackground, StyleSheet, Text, View, TouchableOpacity, Dimensions } from 'react-native';
 import { AirbnbRating } from 'react-native-ratings';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { countries } from '../helpers/countries';
@@ -109,7 +109,7 @@ export const ListItemTopBeer = ({ item, index, top = true }: Props) => {
           </View>
 
           <View style={styles.infoTextContainer}>
-            <Text style={styles.infoTextBold}>Especialidad: </Text>
+            <Text style={styles.infoTextBold}>Espec: </Text>
             <Text style={styles.infoText}>{item.speciality}</Text>
           </View>
 
@@ -151,6 +151,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     elevation: 5,
     shadowColor: 'rgb(85, 64, 0)',
+    width: Dimensions.get('window').width > 500 ? Dimensions.get('window').width * 0.61 : Dimensions.get('window').width * 0.91,
   },
   medalImage: {
     height: 45,
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     top: 5,
-    zIndex: 3,
+    zIndex: 13,
   },
   imageHeaderBackground: {
     flexDirection: 'row',

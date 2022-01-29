@@ -13,6 +13,7 @@ export interface BeerCollection {
   votes: number;
   ratings: Array<BeerRatings>;
   origin_country: string;
+  creation_date: string;
 }
 
 export interface BeerRatings {

@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react'
-import { Image, ImageBackground, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Image, ImageBackground, StyleSheet, Text, View, TouchableOpacity, Dimensions } from 'react-native';
 import { AirbnbRating } from 'react-native-ratings';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { countries } from '../helpers/countries';
@@ -8,13 +8,14 @@ import { getBeerAverage } from '../helpers/helpers';
 import { BeerCollection } from '../interfaces/Beers';
 import { FadeInImage } from './FadeInImage';
 
+const screenWidth = Dimensions.get('window').width;
+
 interface Props {
   item: BeerCollection;
-  index: number;
-  top: boolean;
+  fullScreen: boolean;
 };
 
-export const ListItemFavourites = ({ item, index }: Props) => {
+export const ListItemFavourites = ({ item, fullScreen }: Props) => {
   const navigation = useNavigation<any>();
   const [rateAverage, setRateAverage] = useState(0);
 
@@ -23,10 +24,14 @@ export const ListItemFavourites = ({ item, index }: Props) => {
     setRateAverage(average!);
   }, [item]);
 
+  console.log(Dimensions.get('window').width)
   return (
     <TouchableOpacity
       activeOpacity={0.98}
-      style={styles.listItemContainer}
+      style={[
+        styles.listItemContainer,
+        fullScreen ? styles.fullScreen : {}
+      ]}
       onPress={() => navigation.navigate('BeerScreen', {
         beer: item
       })}
@@ -65,7 +70,7 @@ export const ListItemFavourites = ({ item, index }: Props) => {
 
         </View>
 
-        <View style={{ width: '60%', paddingLeft: 20 }}>
+        <View style={{ flex: 4, paddingLeft: 20 }}>
 
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoTextBold}>País: </Text>
@@ -108,15 +113,15 @@ export const ListItemFavourites = ({ item, index }: Props) => {
             />
           </View>
 
+          <TouchableOpacity
+            style={{ alignSelf: 'center', width: 40, position: 'absolute', right: -5, top: 35 }}
+            onPress={() => navigation.navigate('BeerScreen', {
+              beer: item
+            })}
+          >
+            <Icon name="chevron-forward" size={30} color="rgb(145, 121, 33)" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={{ alignSelf: 'center', width: '10%', right: -10 }}
-          onPress={() => navigation.navigate('BeerScreen', {
-            beer: item
-          })}
-        >
-          <Icon name="chevron-forward" size={30} color="rgb(145, 121, 33)" />
-        </TouchableOpacity>
       </View>
     </TouchableOpacity >
   );
@@ -132,6 +137,9 @@ const styles = StyleSheet.create({
     shadowColor: 'rgb(85, 64, 0)',
     height: 160,
     marginRight: 25,
+  },
+  fullScreen: {
+    width: screenWidth > 500 ? screenWidth * 0.56 : screenWidth * 0.85,
   },
   medalImage: {
     height: 45,
@@ -159,12 +167,13 @@ const styles = StyleSheet.create({
   cardContent: {
     alignItems: 'center',
     flexDirection: 'row',
-    width: 280,
+    width: '100%',
     paddingHorizontal: 5,
     paddingVertical: 5,
   },
   beerImageContainer: {
-    width: '24%',
+    flex: 2,
+    width: '30%',
     height: 110,
     justifyContent: 'center',
     alignItems: 'center'

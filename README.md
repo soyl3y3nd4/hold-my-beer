@@ -83,6 +83,6 @@ App still in progress
 
 ```jsx
 starStyle: {
-  margin: 1.25;
+  margin: 1.25,
 }
 ```

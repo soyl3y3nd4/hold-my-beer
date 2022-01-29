@@ -1,29 +1,30 @@
-import React, { useContext, useEffect } from 'react'
-import { Text, View, ScrollView, ImageBackground, Dimensions } from 'react-native'
+import React, { useContext, useEffect, useState } from 'react'
+import { Text, View, ScrollView, ImageBackground, Dimensions, FlatList } from 'react-native'
 
 import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
 
 import { DrawerToggleButton } from '../components/DrawerToggleButton';
 import { BeerContext } from '../context/beerContext/BeerContext';
-import { AuthContext } from '../context/authContext/AuthContext';
 import { StyleSheet } from 'react-native';
+import { ListItemFavourites } from '../components/ListItemFavourites';
+import { BeerCollection } from '../interfaces/Beers';
+import { orderBeersByDate, orderBeersByVotes } from '../helpers/helpers';
 
 interface Props {
   navigation: DrawerNavigationHelpers
 };
 
 export const Dashboard = ({ navigation }: Props) => {
+  const [beerTopVoted, setBeerTopVoted] = useState({} as BeerCollection);
+  const [newestBeer, setNewestBeer] = useState({} as BeerCollection);
+
   const {
     beers,
-    favouriteBeers,
-    userNewBeers,
-    userRatedBeers,
     getBeers,
     getUserNewBeers,
     getUserRatedBeers,
     getFavouriteBeers,
   } = useContext(BeerContext);
-  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     getBeers();
@@ -31,6 +32,15 @@ export const Dashboard = ({ navigation }: Props) => {
     getUserRatedBeers();
     getFavouriteBeers();
   }, []);
+
+  useEffect(() => {
+    if (beers?.length === 0) return;
+    const topVotedBeers = orderBeersByVotes([...beers]);
+    setBeerTopVoted(topVotedBeers[0]);
+
+    const newestBeer = orderBeersByDate([...beers]);
+    setNewestBeer(newestBeer[0]);
+  }, [beers]);
 
   return (
     <>
@@ -49,33 +59,86 @@ export const Dashboard = ({ navigation }: Props) => {
       />
       <DrawerToggleButton navigation={navigation} />
 
-      <ScrollView contentContainerStyle={{ alignItems: 'center', flexGrow: 1 }}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(221, 204, 157, 0.5)', width: '100%', paddingHorizontal: 20 }}>
-          <Text style={{ fontFamily: 'JosefinBold', fontSize: 25, color: 'white', marginTop: 26, marginBottom: 10, }}>Panel Principal</Text>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+
+        <View style={{ flex: 1, backgroundColor: 'rgba(220, 220, 220, 0.1)', paddingHorizontal: 0, alignItems: 'center' }}>
+          <Text style={{ fontFamily: 'JosefinBold', fontSize: 25, color: 'white', marginTop: 26, marginBottom: 10, textAlign: 'center' }}>Bienvenido</Text>
 
           <View style={{ flexDirection: 'row' }}>
-            <Text style={styles.titleBold}>Usuario: </Text>
-            <Text style={styles.info}>{user?.email}</Text>
+            <Text style={styles.titleBold}>Total cervezas en el sistema: </Text>
+            <Text style={styles.info}>{beers?.length}</Text>
           </View>
 
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={styles.titleBold}>Total cervezas en API: </Text>
-            <Text style={styles.info}>{beers.length}</Text>
+          <View style={{ marginBottom: 15, width: '100%' }}>
+            <Text style={styles.titleBold}>La cerveza con mejor valoración: </Text>
+            {
+              beers?.length > 0 && (
+                <FlatList
+                  style={{
+                    paddingHorizontal: 20,
+                    width: '100%',
+                  }}
+                  contentContainerStyle={{
+                    marginLeft: Dimensions.get('window').width * 0.02,
+                  }}
+                  data={beers.slice(0, 1)}
+                  horizontal
+                  keyExtractor={(beer: any) => beer.name!}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({ item }) =>
+                    <ListItemFavourites item={item} fullScreen />
+                  }
+                />
+              )
+            }
           </View>
 
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={styles.titleBold}>Total cervezas en favoritos: </Text>
-            <Text style={styles.info}>{favouriteBeers.length}</Text>
+          <View style={{ marginBottom: 15, width: '100%' }}>
+            <Text style={styles.titleBold}>La cerveza más votada: </Text>
+            {
+              beerTopVoted?.name && (
+                <FlatList
+                  style={{
+                    paddingHorizontal: 15,
+                    width: '100%',
+                  }}
+                  contentContainerStyle={{
+                    marginLeft: Dimensions.get('window').width * 0.02,
+                  }}
+                  data={[beerTopVoted]}
+                  horizontal
+                  keyExtractor={(beer: any) => beer.name!}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({ item }) =>
+                    <ListItemFavourites item={item} fullScreen />
+                  }
+                />
+              )
+            }
           </View>
 
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={styles.titleBold}>Total cervezas valoradas: </Text>
-            <Text style={styles.info}>{userRatedBeers.length}</Text>
-          </View>
-
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={styles.titleBold}>Total cervezas creadas: </Text>
-            <Text style={styles.info}>{userNewBeers.length}</Text>
+          <View style={{ marginBottom: 15, width: '100%' }}>
+            <Text style={styles.titleBold}>Última cerveza agregada: </Text>
+            {
+              newestBeer?.name && (
+                <FlatList
+                  style={{
+                    paddingHorizontal: 15,
+                    width: '100%',
+                  }}
+                  contentContainerStyle={{
+                    marginLeft: Dimensions.get('window').width * 0.02,
+                  }}
+                  data={[newestBeer]}
+                  horizontal
+                  keyExtractor={(beer: any) => beer.name!}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({ item }) =>
+                    <ListItemFavourites item={item} fullScreen />
+                  }
+                />
+              )
+            }
           </View>
         </View>
       </ScrollView>
@@ -86,12 +149,14 @@ export const Dashboard = ({ navigation }: Props) => {
 const styles = StyleSheet.create({
   titleBold: {
     fontFamily: 'JosefinBold',
-    fontSize: 16,
-    color: 'white'
+    fontSize: 14,
+    color: 'white',
+    marginBottom: 10,
+    paddingHorizontal: 15,
   },
   info: {
     fontFamily: 'JosefinRegular',
     fontSize: 16,
-    color: 'white'
+    color: 'rgba(255, 182, 0, 0.9)',
   }
 });

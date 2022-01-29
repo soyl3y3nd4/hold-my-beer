@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction } from 'react';
+import { Dimensions } from 'react-native';
 import DropDownPicker, { ItemType } from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 

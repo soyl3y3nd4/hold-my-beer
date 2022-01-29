@@ -71,7 +71,7 @@ export const FavouritesScreen = ({ navigation }: Props) => {
       <ScrollView>
         <>
           <View style={{ flexDirection: 'row', paddingVertical: 15, paddingTop: 30, paddingHorizontal: 20 }}>
-            <Text style={{ fontFamily: 'JosefinBold', fontSize: 20, color: 'rgba(255,255,255, 1)', }}>Favoritas</Text>
+            <Text style={{ fontFamily: 'JosefinBold', fontSize: 18, color: 'rgba(255,255,255, 1)', }}>Mis Favoritas</Text>
           </View>
 
           {
@@ -87,7 +87,7 @@ export const FavouritesScreen = ({ navigation }: Props) => {
                   keyExtractor={(beer: any) => beer.name!}
                   showsVerticalScrollIndicator={false}
                   renderItem={({ item, index }) =>
-                    <ListItemFavourites item={item} index={index} top={false} />
+                    <ListItemFavourites item={item} fullScreen />
                   }
                 />
               )
@@ -101,7 +101,7 @@ export const FavouritesScreen = ({ navigation }: Props) => {
 
         <>
           <View style={{ flexDirection: 'row', paddingVertical: 15, paddingHorizontal: 20 }}>
-            <Text style={{ fontFamily: 'JosefinBold', fontSize: 20, color: 'rgba(255,255,255, 1)', }}>Valoradas</Text>
+            <Text style={{ fontFamily: 'JosefinBold', fontSize: 18, color: 'rgba(255,255,255, 1)', }}>Valoradas por mí</Text>
           </View>
 
           {
@@ -117,7 +117,7 @@ export const FavouritesScreen = ({ navigation }: Props) => {
                   keyExtractor={(beer: any) => beer.name!}
                   showsVerticalScrollIndicator={false}
                   renderItem={({ item, index }) =>
-                    <ListItemFavourites item={item} index={index} top={false} />
+                    <ListItemFavourites item={item} fullScreen />
                   }
                 />
               )
@@ -132,7 +132,7 @@ export const FavouritesScreen = ({ navigation }: Props) => {
 
         <>
           <View style={{ flexDirection: 'row', paddingVertical: 15, paddingHorizontal: 20 }}>
-            <Text style={{ fontFamily: 'JosefinBold', fontSize: 20, color: 'rgba(255,255,255, 1)', }}>Agregadas</Text>
+            <Text style={{ fontFamily: 'JosefinBold', fontSize: 18, color: 'rgba(255,255,255, 1)', }}>Agregadas por mí</Text>
           </View>
 
           {
@@ -148,7 +148,7 @@ export const FavouritesScreen = ({ navigation }: Props) => {
                   keyExtractor={(beer: any) => beer.name!}
                   showsVerticalScrollIndicator={false}
                   renderItem={({ item, index }) =>
-                    <ListItemFavourites item={item} index={index} top={false} />
+                    <ListItemFavourites item={item} fullScreen />
                   }
                 />
               )

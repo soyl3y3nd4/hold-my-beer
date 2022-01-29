@@ -3,6 +3,7 @@ import firestore from '@react-native-firebase/firestore';
 import { BeerCollection } from '../../interfaces/Beers';
 import { Asset } from 'react-native-image-picker';
 import auth from '@react-native-firebase/auth';
+import { orderBeersByRating } from '../../helpers/helpers';
 
 type BeerContextProps = {
   isLoading: boolean;
@@ -41,10 +42,10 @@ export const BeerProvider = ({ children }: any) => {
   const getBeers = async () => {
     setIsLoading(true);
     try {
-      const resp = await firestore().collection('beers').orderBy('votes', 'desc').get();
+      const resp = await firestore().collection('beers').get();
       const beersArray = resp.docs.map((beer) => beer.data());
 
-      setBeers([...beersArray] as BeerCollection[]);
+      setBeers([...orderBeersByRating(beersArray as BeerCollection[])]);
       const newBeers = await getUserNewBeers();
       const ratedBeers = await getUserRatedBeers();
       setUserNewBeers([...newBeers]);
@@ -232,7 +233,8 @@ export const BeerProvider = ({ children }: any) => {
       const ref = await firestore().collection('beers');
 
       ref.doc(updatedBeer.name).set({
-        ratings: [...updatedBeer.ratings]
+        ratings: [...updatedBeer.ratings],
+        votes: updatedBeer.ratings.length,
       }, { merge: true });
 
       setDbUserRatedBeers(updatedBeer);
@@ -243,7 +245,7 @@ export const BeerProvider = ({ children }: any) => {
           : beer
       );
 
-      setBeers([...beerss]);
+      setBeers([...orderBeersByRating(beerss as BeerCollection[])]);
     } catch (error) {
       console.warn(error);
     }

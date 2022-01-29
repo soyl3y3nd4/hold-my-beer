@@ -71,7 +71,7 @@ export const FindBeer = ({ ...props }: Props) => {
 
   return (
     <ImageBackground style={{ height, width, alignItems: 'center', flex: 1, }} source={require('../images/bar.jpg')} resizeMode="cover">
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(221, 204, 157, 0.2)', position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, }}>
+      <View style={{ flex: 1, justifyContent: 'center', backgroundColor: 'rgba(221, 204, 157, 0.2)', position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, }}>
         <View style={{ flex: 1 }}>
           {
             term.length > 0 && filteredBeers.length === 0
@@ -99,6 +99,9 @@ export const FindBeer = ({ ...props }: Props) => {
                   data={filteredBeers}
                   keyExtractor={(beer: any) => beer.name!}
                   showsVerticalScrollIndicator={false}
+                  contentContainerStyle={{
+                    alignItems: Dimensions.get('screen').width > 500 ? 'flex-start' : 'center',
+                  }}
                   ListHeaderComponent={(
                     <View style={{
                       marginTop: Platform.OS === 'ios'
@@ -119,7 +122,7 @@ export const FindBeer = ({ ...props }: Props) => {
           ? <LoadingScreen />
           : (
             <>
-              <DrawerToggleButton {...props} />
+              <DrawerToggleButton {...props} tablet />
               <SearchInput
                 textValue={textValue}
                 setTextValue={setTextValue}
@@ -146,7 +149,7 @@ const styles = StyleSheet.create({
   searchInput: {
     position: 'absolute',
     zIndex: 999,
-    width: screenWidth - 100,
+    width: screenWidth > 500 ? screenWidth * 0.48 : screenWidth * 0.7,
     left: 0,
   },
   wrapperNotFound: {

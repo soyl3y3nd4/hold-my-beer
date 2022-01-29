@@ -95,6 +95,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
       city,
       votes: 0,
       ratings: [],
+      creation_date: new Date().toISOString(),
     };
 
     if (tempFile) {
@@ -248,13 +249,13 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
   return (
     <>
       <ImageBackground
-        style={{ height, width, alignItems: 'center', flex: 1, }}
+        style={{ height, width, flex: 1, }}
         source={require('../images/add_beer.jpg')}
         resizeMode="cover"
       >
 
-        <ScrollView style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}>
-          <View style={{ paddingHorizontal: 15, flex: 1, width: '100%', backgroundColor: 'rgba(221, 204, 157, 0.2)' }}>
+        <ScrollView style={{ backgroundColor: 'rgba(221, 204, 157, 0.2)' }}>
+          <View style={{ paddingHorizontal: 15, flex: 1, width: '100%' }}>
 
             <View style={styles.containerHeader}>
               <Text style={styles.headerText}>
@@ -263,7 +264,10 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
             </View>
 
             <TouchableOpacity
-              style={styles.mediaZone}
+              style={{
+                ...styles.mediaZone,
+                width: width > 500 ? width * 0.615 : width - 30
+              }}
               activeOpacity={0.8}
               onPress={() => setModalMediaZoneIsOpen(true)}
             >
@@ -299,7 +303,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
             />
 
             {/* Beer Name input */}
-            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+            <View style={{ ...styles.inputContainer, width: width > 500 ? width * 0.615 : width - 30 }}>
               <Text style={styles.inputInfo}>
                 Nombre
               </Text>
@@ -318,7 +322,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
             </View>
 
             {/* Abv Name input */}
-            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+            <View style={{ ...styles.inputContainer, width: width > 500 ? width * 0.615 : width - 30, }}>
               <Text style={styles.inputInfo}>
                 Graduación Alcohol
               </Text>
@@ -336,7 +340,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
             </View>
 
             {/* Beer Type picker */}
-            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+            <View style={{ ...styles.inputContainer, width: width > 500 ? width * 0.615 : width - 30, }}>
               <Text style={styles.inputInfo}>
                 Tipo cerveza
               </Text>
@@ -355,7 +359,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
             {/* Beer Speciality picker */}
             <View style={{
               ...styles.inputContainer,
-              width: width - 30,
+              width: width > 500 ? width * 0.615 : width - 30,
               backgroundColor: !type ? 'rgba(255,255,255,0.2)' : 'rgba(255, 255, 230, 0.9)',
               elevation: !type ? 0 : 5,
             }}>
@@ -380,7 +384,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
             </View>
 
             {/* Beer Origin Country picker */}
-            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+            <View style={{ ...styles.inputContainer, width: width > 500 ? width * 0.615 : width - 30, }}>
               <Text style={styles.inputInfo}>
                 País de origen
               </Text>
@@ -398,7 +402,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
             </View>
 
             {/* City Beer input */}
-            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+            <View style={{ ...styles.inputContainer, width: width > 500 ? width * 0.615 : width - 30, }}>
               <Text style={styles.inputInfo}>
                 Ciudad de origen
               </Text>
@@ -416,7 +420,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
             </View>
 
             {/* City Beer input */}
-            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+            <View style={{ ...styles.inputContainer, width: width > 500 ? width * 0.615 : width - 30, }}>
               <Text style={styles.inputInfo}>
                 Año de primera elaboración
               </Text>
@@ -433,7 +437,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
             </View>
 
             {/* Ingredients Beer input */}
-            <View style={{ ...styles.inputContainer, width: width - 30, }}>
+            <View style={{ ...styles.inputContainer, width: width > 500 ? width * 0.615 : width - 30, }}>
               <Text style={styles.inputInfo}>
                 Ingredientes
               </Text>
@@ -456,6 +460,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
             <View style={{
               ...styles.inputContainer,
               marginBottom: 40,
+              width: width > 500 ? width * 0.615 : width - 30,
             }}>
               <Text style={styles.inputInfo}>
                 Descripción

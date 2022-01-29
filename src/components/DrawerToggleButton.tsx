@@ -1,13 +1,14 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { Dimensions, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
 
 interface Props {
-  navigation: DrawerNavigationHelpers
+  navigation: DrawerNavigationHelpers;
+  tablet?: boolean;
 };
 
-export const DrawerToggleButton = ({ navigation }: Props) => {
+export const DrawerToggleButton = ({ navigation, tablet }: Props) => {
   return (
     <TouchableOpacity
       activeOpacity={0.2}
@@ -15,7 +16,7 @@ export const DrawerToggleButton = ({ navigation }: Props) => {
       style={{
         position: 'absolute',
         top: 26,
-        right: 15,
+        right: Dimensions.get('screen').width > 500 && tablet ? 340 : 15,
         zIndex: 101,
         backgroundColor: 'rgba(0, 0, 0, 0.1)',
         borderRadius: 5,
