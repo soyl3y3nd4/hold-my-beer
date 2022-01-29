@@ -24,7 +24,6 @@ export const ListItemFavourites = ({ item, fullScreen }: Props) => {
     setRateAverage(average!);
   }, [item]);
 
-  console.log(Dimensions.get('window').width)
   return (
     <TouchableOpacity
       activeOpacity={0.98}
