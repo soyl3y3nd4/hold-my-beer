@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 interface Props {
   open: boolean;
-  value: string | null;
+  value: string | null | string[];
   items: ItemType[];
   setOpen: Dispatch<SetStateAction<boolean>>;
   setValue: Dispatch<SetStateAction<any>>;

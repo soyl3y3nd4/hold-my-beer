@@ -130,7 +130,7 @@ export const LoginScreen = () => {
                         ...loginTheme.button,
                         alignSelf: 'center',
                       }}
-                      activeOpacity={0.6}
+                      activeOpacity={0.7}
                       onPress={onLogin}
                     >
                       <Text style={{

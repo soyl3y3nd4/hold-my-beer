@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { Dashboard } from '../screens/Dashboard';
+import { Dashboard } from '../screens/HomeScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
 const AnimatedIcon = Animated.createAnimatedComponent(Icon);
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -13,8 +13,8 @@ import { useTabAnimation } from '../hooks/useTabAnimation';
 import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
 
 import { FavouritesScreen } from '../screens/FavouritesScreen';
-import { VotesScreen } from '../screens/VotesScreen';
-import { UserCreatedBeersScreen } from '../screens/UserCreatedBeersScreen';
+// import { VotesScreen } from '../screens/VotesScreen';
+// import { UserCreatedBeersScreen } from '../screens/UserCreatedBeersScreen';
 
 const Tab = createBottomTabNavigator();
 

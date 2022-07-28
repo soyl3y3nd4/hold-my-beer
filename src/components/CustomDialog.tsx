@@ -5,11 +5,13 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 interface CustomAlertProps {
   isOpen: boolean;
   close: () => void;
-  buttonText: string;
+  agree: () => void;
+  buttonTextConfirm: string;
+  buttonTextCancel: string;
   message: string;
 };
 
-export const CustomAlert = ({ isOpen, close, buttonText, message }: CustomAlertProps) => {
+export const CustomDialog = ({ isOpen, close, agree, buttonTextConfirm, buttonTextCancel, message }: CustomAlertProps) => {
   return (
     <Modal
       visible={isOpen}
@@ -23,10 +25,20 @@ export const CustomAlert = ({ isOpen, close, buttonText, message }: CustomAlertP
             onPress={close}
             style={{
               ...styles.button,
+            }}
+          >
+            <Text style={styles.buttonsText}>Cancelar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={agree}
+            style={{
+              ...styles.button,
               backgroundColor: 'rgba(187, 3, 3, 0.8)',
             }}
           >
-            <Text style={styles.buttonsText}>{buttonText}</Text>
+            <Text style={styles.buttonsText}>Eliminar</Text>
           </TouchableOpacity>
         </View>
 
@@ -40,7 +52,9 @@ const styles = StyleSheet.create({
     padding: 2,
     opacity: 0.9,
     elevation: 10,
-    justifyContent: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center'
   },
   backdrop: {
@@ -64,15 +78,15 @@ const styles = StyleSheet.create({
     padding: 3,
     width: 100,
   },
+  buttonsContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
   buttonsText: {
     fontWeight: 'bold',
     color: '#fff',
     letterSpacing: 1.5
-  },
-  buttonsContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
   },
 });

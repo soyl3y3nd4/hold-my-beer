@@ -10,10 +10,10 @@ export const calculate_age = (date: Date) => {
 export const getBeerAverage = (beer: BeerCollection) => {
   let average = 0;
 
-  if (beer?.ratings?.length === 0) return average;
+  if (!beer?.ratings || !beer.ratings.length) return average;
   const addition = beer.ratings.reduce((a: number, b: BeerRatings) => a + b.rate, 0);
 
-  return (addition === 0)
+  return (!addition)
     ? average
     : addition / beer?.ratings?.length;
 };
@@ -24,7 +24,11 @@ export const waitFor = (ms: number) => {
 
 export const orderBeersByRating = (beers: BeerCollection[]) => {
   return beers.sort((a: BeerCollection, b: BeerCollection) => {
-    return getBeerAverage(b) - getBeerAverage(a);
+    return (getBeerAverage(b) - getBeerAverage(a) > 0)
+      ? 1
+      : (getBeerAverage(b) === getBeerAverage(a))
+        ? b.votes - a.votes
+        : -1
   });
 }
 

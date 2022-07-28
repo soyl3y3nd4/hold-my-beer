@@ -10,7 +10,7 @@ import Tab3 from './Tab3';
 
 import { AuthContext } from '../context/authContext/AuthContext';
 import { ProfileScreen } from '../screens/ProfileScreen';
-import { NewBeer } from '../screens/NewBeer';
+import { NewBeerScreen } from '../screens/NewBeerScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { UserContext } from '../context/userContext/UserContext';
 import TabDashboard from './TabDashboard';
@@ -31,7 +31,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="TabDashboard" component={TabDashboard} />
       <Drawer.Screen name="Tab1" component={Tab1} />
       <Drawer.Screen name="Tab3" component={Tab3} />
-      <Drawer.Screen name="NewBeer" component={NewBeer} />
+      <Drawer.Screen name="NewBeer" component={NewBeerScreen} />
       <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
       <Drawer.Screen name="SettingsScreen" component={SettingsScreen} />
     </Drawer.Navigator>
@@ -107,16 +107,16 @@ const MenuContent = ({ navigation, state }: DrawerContentComponentProps) => {
       <View style={styles.menuContainer}>
         <View>
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.7}
             onPress={() => navigation.navigate('TabDashboard')}
             style={[styles.menuButton]}
           >
-            <Icon name="home-outline" size={30} color={state.index === 0 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
+            <Icon name="home-outline" size={30} color={state.index === 0 ? 'rgba(223, 153, 0, 0.8)' : 'rgba(0, 0, 0, 0.5)'} />
             <Text style={[styles.menuItem, state.index === 0 ? styles.menuItemActive : null]}>Panel Principal</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.7}
             onPress={() => navigation.navigate('Tab1')}
             style={styles.menuButton}
           >
@@ -124,13 +124,13 @@ const MenuContent = ({ navigation, state }: DrawerContentComponentProps) => {
               size={30}
               name="format-list-bulleted"
               style={[{ width: 30, zIndex: 1 }]}
-              color={state.index === 1 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'}
+              color={state.index === 1 ? 'rgba(223, 153, 0, 0.8)' : 'rgba(0, 0, 0, 0.5)'}
             />
             <Text style={[styles.menuItem, state.index === 1 ? styles.menuItemActive : null]}>Listado Cervezas</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.7}
             onPress={() => navigation.navigate('Tab3')}
             style={styles.menuButton}
           >
@@ -138,7 +138,7 @@ const MenuContent = ({ navigation, state }: DrawerContentComponentProps) => {
               <Icon
                 name="person-outline"
                 size={30}
-                color={state.index === 2 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'}
+                color={state.index === 2 ? 'rgba(223, 153, 0, 0.8)' : 'rgba(0, 0, 0, 0.5)'}
                 style={[{ position: 'absolute', bottom: -10, left: 0, zIndex: 14, fontSize: 25 }]}
               />
               <Icon
@@ -155,7 +155,7 @@ const MenuContent = ({ navigation, state }: DrawerContentComponentProps) => {
                 }]}
                 name="beer-outline"
                 size={15}
-                color={state.index === 2 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'}
+                color={state.index === 2 ? 'rgba(223, 153, 0, 0.8)' : 'rgba(0, 0, 0, 0.5)'}
               />
             </View>
             <Text style={[styles.menuItem, state.index === 2 ? styles.menuItemActive : null]}>Mis Cervezas</Text>
@@ -163,35 +163,35 @@ const MenuContent = ({ navigation, state }: DrawerContentComponentProps) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.7}
             onPress={() => navigation.navigate('NewBeer')}
             style={styles.menuButton}
           >
-            <Icon name="beer-outline" size={30} color={state.index === 3 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
+            <Icon name="beer-outline" size={30} color={state.index === 3 ? 'rgba(223, 153, 0, 0.8)' : 'rgba(0, 0, 0, 0.5)'} />
             <Text style={[styles.menuItem, state.index === 3 ? styles.menuItemActive : null]}>Agregar Cerveza</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.7}
             onPress={() => navigation.navigate('ProfileScreen')}
             style={styles.menuButton}
           >
-            <Icon name="person-outline" size={30} color={state.index === 4 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
+            <Icon name="person-outline" size={30} color={state.index === 4 ? 'rgba(223, 153, 0, 0.8)' : 'rgba(0, 0, 0, 0.5)'} />
             <Text style={[styles.menuItem, state.index === 4 ? styles.menuItemActive : null]}>Mi Usuario</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.7}
             onPress={() => navigation.navigate('SettingsScreen')}
             style={styles.menuButton}
           >
-            <Icon name="settings-outline" size={30} color={state.index === 5 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
+            <Icon name="settings-outline" size={30} color={state.index === 5 ? 'rgba(223, 153, 0, 0.8)' : 'rgba(0, 0, 0, 0.5)'} />
             <Text style={[styles.menuItem, state.index === 5 ? styles.menuItemActive : null]}>Ajustes</Text>
           </TouchableOpacity>
         </View>
 
         <View style={{ flex: 1, justifyContent: 'flex-end' }}>
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.7}
             onPress={logOut}
             style={{
               ...styles.menuButton,
@@ -283,7 +283,7 @@ export const styles = StyleSheet.create({
     marginBottom: 20,
   },
   menuItemActive: {
-    color: 'rgb(226, 189, 0)',
+    color: 'rgba(223, 153, 0, 0.8)',
   },
   menuItem: {
     fontFamily: 'Readex',

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { View, FlatList, StyleSheet, RefreshControl, Text, Platform, ImageBackground, useWindowDimensions, Dimensions } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DrawerNavigationHelpers } from '@react-navigation/drawer/lib/typescript/src/types';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -14,22 +14,20 @@ import { FadeInImage } from '../components/FadeInImage';
 
 import { LoadingScreen } from './LoadingScreen';
 
-import { waitFor } from '../helpers/helpers';
 import { BeerCollection } from '../interfaces/Beers';
 
 const screenWidth = Dimensions.get('window').width;
-const DEFAULT_BEERS_LIMIT = 10;
+const DEFAULT_BEERS_LIMIT = 15;
 
 interface Props {
   navigation: DrawerNavigationHelpers,
 };
 
-export const TopBeers = ({ ...props }: Props) => {
+export const BeersListScreen = ({ ...props }: Props) => {
   const { navigation } = props;
 
   const { height, width } = useWindowDimensions();
   const { top } = useSafeAreaInsets();
-  const isFocused = useIsFocused();
 
   const { beers, getBeers, isLoading } = useContext(BeerContext);
 
@@ -37,45 +35,32 @@ export const TopBeers = ({ ...props }: Props) => {
   const [textValue, setTextValue] = useState<string>('');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [filteredBeers, setFilteredBeers] = useState<BeerCollection[]>([]);
-  const [currentBeers, setCurrentBeers] = useState<BeerCollection[]>([]);
 
   const [amountBeersLimit, setAmountBeersLimit] = useState(DEFAULT_BEERS_LIMIT);
 
   useEffect(() => {
-    if (beers.length > 0) setCurrentBeers([...beers.slice(0, amountBeersLimit)]);
+    if (beers.length > 0) {
+      setFilteredBeers([...beers.slice(0, amountBeersLimit)]);
+      setTerm('');
+      setTextValue('');
+    }
     else getBeers();
-  }, []);
+  }, [beers]);
 
   useEffect(() => {
-    if (isFocused) return;
-
-    setTerm('');
-    setTextValue('');
-    setAmountBeersLimit(DEFAULT_BEERS_LIMIT);
-    setFilteredBeers([]);
-
-    setCurrentBeers([...beers.slice(0, DEFAULT_BEERS_LIMIT)]);
-  }, [isFocused]);
-
-  useEffect(() => {
-    setIsRefreshing(true);
 
     if (!term.length) {
       setAmountBeersLimit(DEFAULT_BEERS_LIMIT);
-      setFilteredBeers([]);
-      setCurrentBeers([...beers.slice(0, DEFAULT_BEERS_LIMIT)]);
-      setIsRefreshing(false);
+      setFilteredBeers([...beers.slice(0, DEFAULT_BEERS_LIMIT)]);
       return;
     };
 
     filterBeersByText();
   }, [term]);
 
-  const onRefresh = async () => {
+  const onRefresh = () => {
     setIsRefreshing(true);
-    await waitFor(300);
-
-    await getBeers();
+    getBeers();
     setIsRefreshing(false);
   };
 
@@ -91,7 +76,6 @@ export const TopBeers = ({ ...props }: Props) => {
     } else {
       setFilteredBeers([]);
     }
-    setIsRefreshing(false);
   };
 
   const navigateToAddBeer = () => {
@@ -120,76 +104,47 @@ export const TopBeers = ({ ...props }: Props) => {
                 </TouchableOpacity>
               </View>
             )
-            : term && filteredBeers.length > 0
-              ? (
-                <FlatList
-                  style={{
-                    paddingHorizontal: 15,
-                    backgroundColor: 'rgba(0, 0, 0, 0.55)',
-                    width: '100%',
-                  }}
-                  contentContainerStyle={{
-                    alignItems: Dimensions.get('screen').width > 500 ? 'flex-start' : 'center',
-                  }}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={isRefreshing}
-                      onRefresh={onRefresh}
-                      progressViewOffset={10}
-                      progressBackgroundColor={'rgb(219, 192, 118)'}
-                      colors={['white', 'rgb(219, 192, 118)']}
-                    />
-                  }
-                  data={filteredBeers}
-                  keyExtractor={(beer: any) => beer.name!}
-                  showsVerticalScrollIndicator={false}
-                  ListHeaderComponent={(
-                    <View style={{ flexDirection: 'row', paddingVertical: 44 }} />
-                  )}
-                  ListFooterComponent={(<View style={{ height: 80 }} />)}
-                  renderItem={({ item, index }) => {
-                    return <ListItemTopBeer item={item} index={index} top />
-                  }}
-                />
-              )
-              : (
-                <FlatList
-                  style={{
-                    paddingHorizontal: 15,
-                    backgroundColor: 'rgba(0, 0, 0, 0.55)',
-                    width: '100%',
-                  }}
-                  contentContainerStyle={{
-                    alignItems: Dimensions.get('screen').width > 500 ? 'flex-start' : 'center',
-                  }}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={isRefreshing}
-                      onRefresh={onRefresh}
-                      progressViewOffset={10}
-                      progressBackgroundColor={'rgb(219, 192, 118)'}
-                      colors={['white', 'rgb(219, 192, 118)']}
-                    />
-                  }
-                  data={currentBeers}
-                  keyExtractor={(beer: any) => beer.name!}
-                  showsVerticalScrollIndicator={false}
-                  ListHeaderComponent={(
-                    <View style={{ flexDirection: 'row', paddingVertical: 44 }} />
-                  )}
-                  ListFooterComponent={(<View style={{ height: 80 }} />)}
-                  renderItem={({ item, index }) => {
-                    return <ListItemTopBeer item={item} index={index} top />
-                  }}
-                  onEndReached={() => {
-                    if (term.length > 0) return;
-
-                    setCurrentBeers([...beers.slice(0, amountBeersLimit + DEFAULT_BEERS_LIMIT)]);
-                    setAmountBeersLimit((curentLimit) => curentLimit + DEFAULT_BEERS_LIMIT);
-                  }}
-                  onEndReachedThreshold={600}
-                />
-              )
+            : (
+              <FlatList
+                style={{
+                  paddingHorizontal: 15,
+                  backgroundColor: 'rgba(0, 0, 0, 0.55)',
+                  width: '100%',
+                }}
+                contentContainerStyle={{
+                  alignItems: Dimensions.get('screen').width > 500 ? 'flex-start' : 'center',
+                }}
+                refreshControl={
+                  (term.length > 0)
+                    ? <></>
+                    : (
+                      <RefreshControl
+                        refreshing={isRefreshing}
+                        onRefresh={onRefresh}
+                        progressViewOffset={40}
+                        progressBackgroundColor={'rgba(255, 175, 0, 0.8)'}
+                        colors={['white', 'rgba(255, 255, 255, 0.4)']}
+                        style={{
+                          zIndex: 200,
+                          position: 'absolute',
+                        }}
+                      />
+                    )
+                }
+                data={filteredBeers}
+                keyExtractor={(beer: any) => beer.name!}
+                showsVerticalScrollIndicator={false}
+                ListHeaderComponent={<View style={{ flexDirection: 'row', paddingVertical: 44 }} />}
+                ListFooterComponent={(<View style={{ height: 80 }} />)}
+                renderItem={({ item, index }) => <ListItemTopBeer item={item} index={index} top={!term.length} />}
+                onEndReached={() => {
+                  if (term.length > 0) return;
+                  setFilteredBeers([...beers.slice(0, amountBeersLimit + DEFAULT_BEERS_LIMIT)]);
+                  setAmountBeersLimit((curentLimit) => curentLimit + DEFAULT_BEERS_LIMIT);
+                }}
+                onEndReachedThreshold={1}
+              />
+            )
         }
 
         {
@@ -200,7 +155,7 @@ export const TopBeers = ({ ...props }: Props) => {
               <SearchInput
                 textValue={textValue}
                 setTextValue={setTextValue}
-                onDebounce={(value) => setTerm(value)}
+                onDebounce={setTerm}
                 style={{
                   ...styles.searchInput,
                   top: Platform.OS === 'ios'
@@ -227,15 +182,16 @@ const styles = StyleSheet.create({
     left: 0,
   },
   wrapperNotFound: {
-    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 170,
-    height: 180,
+    paddingTop: 170,
+    flex: 1,
+    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
   },
   imageNotFound: {
     resizeMode: 'contain',
     width: '100%',
-    height: '100%',
+    height: 130,
   },
   notFoundBeerText: {
     color: 'rgba(0,0,0,0.7)',

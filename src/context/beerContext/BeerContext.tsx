@@ -11,6 +11,8 @@ type BeerContextProps = {
   beers: BeerCollection[] | [];
   getBeers: () => void;
   uploadBeer: (beer: BeerCollection) => Promise<boolean>;
+  updateBeer: (beer: BeerCollection, name: string) => Promise<boolean>;
+  deleteBeer: (beerId: string) => Promise<boolean>;
   uploadImageBeer: (image: Asset) => Promise<string>;
   favouriteBeers: BeerCollection[] | [];
   getFavouriteBeers: () => void;
@@ -71,6 +73,39 @@ export const BeerProvider = ({ children }: any) => {
       }
 
       return isBeerUploaded;
+    } catch (error) {
+      console.warn(error);
+      return false;
+    }
+  };
+
+  const updateBeer = async (newBeerData: BeerCollection) => {
+    try {
+      const ref = await firestore().collection('beers');
+      const oldBeerData = await (await ref.doc(newBeerData.name).get()).data();
+      const updatedBeer = { ...oldBeerData, ...newBeerData };
+
+      await ref.doc(newBeerData.name).set(updatedBeer, { merge: true });
+
+      const updatedBeers = beers.map(beer => beer.name === newBeerData.name ? updatedBeer : beer);
+      setBeers(updatedBeers);
+
+      return true;
+    } catch (error) {
+      console.warn(error);
+      return false;
+    }
+  };
+
+  const deleteBeer = async (beerId: string) => {
+    try {
+      const ref = await firestore().collection('beers');
+      await ref.doc(beerId).delete();
+
+      const updatedBeers = beers.filter(beer => beer.name !== beerId);
+      setBeers(updatedBeers);
+
+      return true;
     } catch (error) {
       console.warn(error);
       return false;
@@ -274,6 +309,8 @@ export const BeerProvider = ({ children }: any) => {
       beers,
       getBeers,
       uploadBeer,
+      updateBeer,
+      deleteBeer,
       uploadImageBeer,
       favouriteBeers,
       getFavouriteBeers,

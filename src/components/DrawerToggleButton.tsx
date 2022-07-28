@@ -11,14 +11,14 @@ interface Props {
 export const DrawerToggleButton = ({ navigation, tablet }: Props) => {
   return (
     <TouchableOpacity
-      activeOpacity={0.2}
+      activeOpacity={0.7}
       onPress={() => navigation.toggleDrawer()}
       style={{
         position: 'absolute',
         top: 26,
         right: Dimensions.get('screen').width > 500 && tablet ? 340 : 15,
         zIndex: 101,
-        backgroundColor: 'rgba(249, 200, 0, 0.8)',
+        backgroundColor: 'rgba(255, 175, 0, 0.8)',
         borderRadius: 5,
         height: 32,
         padding: 0,

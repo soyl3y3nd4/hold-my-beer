@@ -11,7 +11,7 @@ interface Props {
   setTextValue: (value: string) => void;
 }
 const SearchInput = ({ style, onDebounce, textValue, setTextValue }: Props) => {
-  const { debouncedValue } = useDebouncedValue(textValue);
+  const { debouncedValue } = useDebouncedValue(textValue, 200);
 
   useEffect(() => {
     onDebounce(debouncedValue);

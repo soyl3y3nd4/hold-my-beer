@@ -14,9 +14,12 @@ import { RootStackParams } from '../navigator/Tab1';
 import { countries } from '../helpers/countries';
 
 import { AuthContext } from '../context/authContext/AuthContext';
-import { BeerCollection, BeerRatings } from '../interfaces/Beers';
+import { AlertContext } from '../context/alertContext/AlertContext';
 import { BeerContext } from '../context/beerContext/BeerContext';
+
+import { BeerCollection, BeerRatings } from '../interfaces/Beers';
 import { getBeerAverage, waitFor } from '../helpers/helpers';
+import { CustomDialog } from '../components/CustomDialog';
 
 interface Props extends StackScreenProps<RootStackParams, 'BeerScreen'> { };
 
@@ -25,12 +28,14 @@ export const BeerScreen = ({ route, navigation }: Props) => {
   const { beer, url } = route.params;
 
   const { user } = useContext(AuthContext);
-  const { favouriteBeers, toggleFavouriteBeer, rateBeer } = useContext(BeerContext);
+  const { favouriteBeers, toggleFavouriteBeer, rateBeer, deleteBeer } = useContext(BeerContext);
+  const { showAlert } = useContext(AlertContext);
 
   const [isFavourite, setIsFavourite] = useState(false);
   const [rateAverage, setRateAverage] = useState(0);
   const [userCanVote, setUserCanVote] = useState(true);
   const [showTip, setTip] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     const average = getBeerAverage(beer);
@@ -66,16 +71,30 @@ export const BeerScreen = ({ route, navigation }: Props) => {
 
     rateBeer(updatedBeer);
 
-    await waitFor(500);
+    await waitFor(400);
     setTip(false);
 
-    await waitFor(300);
+    await waitFor(200);
     setUserCanVote(false);
 
     navigation.navigate('BeerScreen', {
       beer: updatedBeer,
       url,
     });
+  };
+
+  const handleDeleteBeer = async () => {
+    const isDeleted = await deleteBeer(beer.name);
+
+    if (isDeleted) {
+      navigation.goBack();
+    } else {
+      return showAlert({
+        isOpen: true,
+        buttonText: 'CERRAR',
+        message: `Error al eliminar la cerveza!\nPruebe de nuevo en unos minutos.`,
+      });
+    }
   };
 
   return (
@@ -163,67 +182,6 @@ export const BeerScreen = ({ route, navigation }: Props) => {
         {/* Beer Info */}
         <View style={{ marginHorizontal: 20 }}>
 
-          {/* Rating */}
-          <View style={styles.infoTextContainer}>
-            <Text style={styles.infoTextBold}>
-              Valoración:
-            </Text>
-            <AirbnbRating
-              ratingContainerStyle={{ marginTop: -57 }}
-              starContainerStyle={{ marginTop: 2, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 5 }}
-              isDisabled={true}
-              count={5}
-              reviews={[]}
-              defaultRating={rateAverage}
-              size={15}
-            />
-
-            {
-              userCanVote
-                ? (
-                  <Tooltip
-                    contentStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-                    allowChildInteraction
-                    isVisible={showTip}
-                    content={
-                      <AirbnbRating
-                        ratingContainerStyle={{ marginTop: -57 }}
-                        starContainerStyle={{ marginTop: 0, borderRadius: 5 }}
-                        count={5}
-                        reviews={[]}
-                        onFinishRating={ratingCompleted}
-                        defaultRating={0}
-                        size={25}
-                      />
-                    }
-                    onClose={() => setTip(false)}
-                    placement="bottom"
-                  >
-                    <TouchableOpacity
-                      activeOpacity={0.7}
-                      style={{ borderRadius: 50, padding: 5, }}
-                      onPress={() => setTip(true)}
-                    >
-                      <Text style={{ color: 'rgb(109, 167, 255)', textDecorationLine: 'underline', top: -2, marginLeft: 2 }}>Valorar</Text>
-                    </TouchableOpacity>
-                  </Tooltip>
-                )
-                : <Text style={{ color: 'rgba(255, 255, 255, 0.6)', top: -2, marginLeft: 2, padding: 5 }}>Ya has votado!</Text>
-            }
-
-          </View>
-
-          {/* Votes */}
-          <View style={styles.infoTextContainer}>
-            <Text style={styles.infoTextBold}>
-              Total votos:
-            </Text>
-            <Text style={styles.infoText}>
-              {beer.ratings.length}
-            </Text>
-          </View>
-
-
           {/* Name */}
           <View style={styles.infoTextContainer}>
             <Text style={styles.infoTextBold}>
@@ -252,6 +210,64 @@ export const BeerScreen = ({ route, navigation }: Props) => {
             </Text>
             <Text style={styles.infoText}>
               {beer.city}
+            </Text>
+          </View>
+
+          {/* Rating */}
+          <View style={styles.infoTextContainer}>
+            <Text style={styles.infoTextBold}>
+              Valoración:
+            </Text>
+            <AirbnbRating
+              ratingContainerStyle={{ marginTop: -57 }}
+              starContainerStyle={{ marginTop: 2, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 5 }}
+              isDisabled={true}
+              count={5}
+              reviews={[]}
+              defaultRating={rateAverage}
+              size={15}
+            />
+
+            {
+              userCanVote
+              && (
+                <Tooltip
+                  contentStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                  allowChildInteraction
+                  isVisible={showTip}
+                  content={
+                    <AirbnbRating
+                      ratingContainerStyle={{ marginTop: -57 }}
+                      starContainerStyle={{ marginTop: 0, borderRadius: 5 }}
+                      count={5}
+                      reviews={[]}
+                      onFinishRating={ratingCompleted}
+                      defaultRating={0}
+                      size={25}
+                    />
+                  }
+                  onClose={() => setTip(false)}
+                  placement="bottom"
+                >
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    style={{ borderRadius: 50, padding: 5, }}
+                    onPress={() => setTip(true)}
+                  >
+                    <Text style={{ color: 'rgb(109, 167, 255)', textDecorationLine: 'underline', top: -2, marginLeft: 2 }}>Valorar</Text>
+                  </TouchableOpacity>
+                </Tooltip>
+              )
+            }
+          </View>
+
+          {/* Votes */}
+          <View style={styles.infoTextContainer}>
+            <Text style={styles.infoTextBold}>
+              Total votos:
+            </Text>
+            <Text style={styles.infoText}>
+              {beer.ratings.length}
             </Text>
           </View>
 
@@ -285,6 +301,16 @@ export const BeerScreen = ({ route, navigation }: Props) => {
             </Text>
           </View>
 
+          {/* ABV */}
+          <View style={styles.infoTextContainer}>
+            <Text style={styles.infoTextBold}>
+              Graduación:
+            </Text>
+            <Text style={styles.infoText}>
+              {beer.abv} %
+            </Text>
+          </View>
+
           {/* Ingredients */}
           <View>
             <Text style={styles.infoTextBold}>
@@ -302,7 +328,6 @@ export const BeerScreen = ({ route, navigation }: Props) => {
                 - {ingredient.charAt(0).toUpperCase() + ingredient.slice(1)}
               </Text>
             )}
-
           </View>
 
           {/* Description */}
@@ -314,8 +339,42 @@ export const BeerScreen = ({ route, navigation }: Props) => {
               {beer.description}
             </Text>
           </View>
-
         </View>
+
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => setShowDeleteModal(true)}
+            style={{
+              ...styles.submitForm,
+              backgroundColor: 'rgba(187, 3, 3, 0.8)',
+            }}
+          >
+            <Text style={styles.buttonsText}>Eliminar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => {
+              navigation.navigate('EditBeerScreen', {
+                beer
+              })
+            }}
+            style={styles.submitForm}
+          >
+            <Text style={styles.buttonsText}>Editar</Text>
+          </TouchableOpacity>
+        </View>
+
+        <CustomDialog
+          isOpen={showDeleteModal}
+          buttonTextConfirm="Aceptar"
+          buttonTextCancel="Cancelar"
+          close={() => setShowDeleteModal(false)}
+          agree={handleDeleteBeer}
+          message={`¿Estás seguro de que quieres \n eliminar esta cerveza?`}
+        />
+
       </ScrollView>
     </>
   );
@@ -362,6 +421,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'JosefinRegular',
     marginTop: 2,
-  }
+  },
+  submitForm: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 3,
+    backgroundColor: 'rgba(255, 175, 0, 0.8)',
+    borderRadius: 5,
+    height: 40,
+    padding: 3,
+    marginBottom: 40,
+    width: 100,
+  },
+  buttonsContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+  },
+  buttonsText: {
+    fontWeight: 'bold',
+    color: '#fff',
+    letterSpacing: 1.5
+  },
 });
+
 

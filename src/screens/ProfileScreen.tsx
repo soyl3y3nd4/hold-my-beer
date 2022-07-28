@@ -33,7 +33,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
     getFavouriteBeers,
   } = useContext(BeerContext);
   const { user } = useContext(AuthContext);
-  const { avatar, birth_date, name, surname, getUserDetails } = useContext(UserContext);
+  const { avatar, birth_date, name, surname, role, getUserDetails } = useContext(UserContext);
 
   useEffect(() => {
     if (favouriteBeers.length === 0) getFavouriteBeers();
@@ -106,6 +106,10 @@ export const ProfileScreen = ({ navigation }: Props) => {
             <Text style={styles.info}>{birth_date}</Text>
           </View>
 
+          <View style={styles.infoContainer}>
+            <Text style={styles.titleBold}>Permisos: </Text>
+            <Text style={styles.info}>{role === 'admin' ? 'Administrador' : 'Usuario'}</Text>
+          </View>
         </View>
       </ScrollView>
     </>

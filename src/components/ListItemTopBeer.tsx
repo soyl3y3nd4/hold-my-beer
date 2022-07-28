@@ -130,9 +130,7 @@ export const ListItemTopBeer = ({ item, index, top = true }: Props) => {
 
         <TouchableOpacity
           style={{ alignSelf: 'center', width: '10%' }}
-          onPress={() => navigation.navigate('BeerScreen', {
-            beer: item
-          })}
+          onPress={() => navigation.navigate('BeerScreen', { beer: item })}
         >
           <Icon name="chevron-forward" size={30} color="rgb(145, 121, 33)" />
         </TouchableOpacity>

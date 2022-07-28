@@ -82,6 +82,7 @@ export const RegisterScreen = () => {
           name,
           surname,
           birth_date: date.toLocaleDateString(),
+          role: 'user',
           favourites: [],
           votes: [],
           new_beers: [],
@@ -323,7 +324,7 @@ export const RegisterScreen = () => {
                   <View style={loginTheme.buttonContainer}>
                     <TouchableOpacity
                       style={loginTheme.button}
-                      activeOpacity={0.6}
+                      activeOpacity={0.7}
                       onPress={onSubmitForm}
                     >
                       <Text style={loginTheme.buttonText}>REGISTRO</Text>

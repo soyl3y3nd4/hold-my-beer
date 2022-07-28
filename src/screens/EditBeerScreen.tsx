@@ -1,26 +1,34 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { TouchableOpacity, ScrollView, StyleSheet, Text, TextInput, View, ImageBackground, useWindowDimensions, Image } from 'react-native';
+
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { useIsFocused } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
+
+import { Asset, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/Ionicons';
 
+import { RootStackParams } from '../navigator/Tab1';
+
 import { AlertContext } from '../context/alertContext/AlertContext';
 import { BeerContext } from '../context/beerContext/BeerContext';
 
-import { useForm } from '../hooks/useForm';
-
 import { DrawerToggleButton } from '../components/DrawerToggleButton';
-import { beer_ingredients, beer_types, specialities } from '../helpers/beerIngredients';
-import { countries } from '../helpers/countries';
 import CustomDropDownPicker from '../components/CustomDropDownPicker';
-import { beerYears } from '../helpers/years';
-import { LoadingScreen } from './LoadingScreen';
-import { Asset, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { ModalMediaZone } from '../components/ModalMediaZone';
 import { ModalRedirect } from '../components/ModalRedirect';
+
+import { useForm } from '../hooks/useForm';
+
+import { beer_ingredients, beer_types, specialities } from '../helpers/beerIngredients';
+import { countries } from '../helpers/countries';
+import { beerYears } from '../helpers/years';
+import { LoadingScreen } from './LoadingScreen';
 import { waitFor } from '../helpers/helpers';
+
+interface Props extends StackScreenProps<RootStackParams, 'BeerScreen'> { };
 
 const initialState = {
   abv: '',
@@ -30,7 +38,7 @@ const initialState = {
   city: '',
 };
 
-export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
+export const EditBeerScreen = ({ ...props }: Props) => {
   const {
     abv,
     description,
@@ -41,7 +49,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
   } = useForm(initialState);
   const { height, width } = useWindowDimensions();
 
-  const { navigation } = props;
+  const { navigation, route: { params } } = props;
 
   const [openBeerType, setOpenBeerType] = useState(false);
   const [type, setType] = useState<null | string>(null);
@@ -53,13 +61,13 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
   const [origin_country, setOrigin_country] = useState<null | string>(null);
 
   const [openIngredients, setOpenIngredients] = useState(false);
-  const [ingredients, setIngredients] = useState<null | string>(null);
+  const [ingredients, setIngredients] = useState<null | string | string[]>(null);
 
   const [openYears, setOpenYears] = useState(false);
   const [first_brewed, setFirst_brewed] = useState<null | string>(null);
 
   const { showAlert } = useContext(AlertContext);
-  const { beers, getBeers, uploadBeer, isLoading, setIsLoading, uploadImageBeer } = useContext(BeerContext);
+  const { updateBeer, isLoading, setIsLoading, uploadImageBeer } = useContext(BeerContext);
 
   const [tempUri, setTempUri] = useState<string | null>(null);
   const [tempFile, setTempFile] = useState<Asset | null>(null);
@@ -75,12 +83,46 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
   }, [isFocused]);
 
   useEffect(() => {
-    if (beers.length > 0) return;
-    getBeers();
+    if (!params?.beer || !Object.keys(params.beer).length) return;
+    setParamsBeerState();
   }, []);
+
+  const setParamsBeerState = async () => {
+    setIsLoading(true);
+    await waitFor(200);
+
+    const {
+      abv,
+      city,
+      description,
+      first_brewed,
+      image_url,
+      ingredients,
+      name,
+      origin_country,
+      speciality,
+      type,
+    } = params.beer;
+    setType(type);
+    setSpeciality(speciality);
+    setOrigin_country(origin_country);
+    setIngredients(ingredients);
+    setFirst_brewed(first_brewed);
+    setTempUri(image_url)
+    setTempFile(null);
+    setFormValue({
+      abv,
+      city,
+      description,
+      name,
+      first_brewed,
+    });
+    setIsLoading(false);
+  };
 
   const saveBeer = async () => {
     setIsLoading(true);
+    await waitFor(200);
 
     const beer = {
       description,
@@ -93,40 +135,37 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
       speciality,
       origin_country,
       city,
-      votes: 0,
-      ratings: [],
-      creation_date: new Date().toISOString(),
     };
 
     if (tempFile) {
       const imageUrl = await uploadImageBeer(tempFile);
       beer.image_url = imageUrl;
+    } else {
+      beer.image_url = params.beer.image_url
     }
 
     /* @ts-ignore */
-    const resp = await uploadBeer(beer);
+    const resp = await updateBeer(beer);
 
     if (!resp) {
-      onChange('', 'name');
       setIsLoading(false);
       return showAlert({
         isOpen: true,
         buttonText: 'CERRAR',
-        message: `Error, esta cerveza ya existe!\nPrueba con otro nombre`,
+        message: `Error al actualizar la cerveza!\nPrueba de nuevo pasados unos minutos`,
       });
     } else {
       setIsLoading(false);
       resetForm();
 
       setModalRedirectIsOpen(true);
+      await waitFor(2000);
+      redirectToTab1();
     }
   };
 
   const redirectToTab1 = async () => {
-    setModalRedirectIsOpen(false);
-    await waitFor(300);
-
-    navigation.navigate('Tab1');
+    navigation.navigate('BeersListScreen');
   };
 
   const onSubmitForm = () => {
@@ -134,12 +173,6 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
 
     let isValid = true;
     let message = '';
-
-    checkIfBeerExists();
-    if (checkIfBeerExists()) {
-      isValid = false;
-      message += `Ya existe una cerveza con ese nombre.\n`;
-    }
 
     if (!name || name.length === 0) {
       isValid = false;
@@ -189,21 +222,6 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
         message,
       });
     }
-  };
-
-  const checkIfBeerExists = (): boolean => {
-    let beerNameExists = false;
-
-    beers.map((beer) => {
-      const beerWithoutAccents = beer.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      const newBeerWithoutAccents = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      if (beerWithoutAccents === newBeerWithoutAccents) {
-        beerNameExists = true;
-        return;
-      }
-    });
-
-    return beerNameExists;
   };
 
   const resetForm = () => {
@@ -259,7 +277,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
 
             <View style={styles.containerHeader}>
               <Text style={styles.headerText}>
-                Nueva Cerveza
+                Editar Cerveza
               </Text>
             </View>
 
@@ -268,7 +286,7 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
                 ...styles.mediaZone,
                 width: width > 500 ? width * 0.615 : width - 30
               }}
-              activeOpacity={0.8}
+              activeOpacity={0.7}
               onPress={() => setModalMediaZoneIsOpen(true)}
             >
               {
@@ -299,17 +317,30 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               buttonText="ACEPTAR"
               isOpen={modalRedirectIsOpen}
               close={redirectToTab1}
-              message="Cerveza agregada con éxito, gracias!"
+              message="Cerveza actualizada con éxito!"
             />
 
             {/* Beer Name input */}
-            <View style={{ ...styles.inputContainer, width: width > 500 ? width * 0.615 : width - 30 }}>
-              <Text style={styles.inputInfo}>
+            <View style={{
+              ...styles.inputContainer,
+              backgroundColor: 'rgba(255, 255, 230, 0.4)',
+              borderColor: 'rgba(0,0,0,0)',
+              elevation: 0,
+              width: width > 500 ? width * 0.615 : width - 30,
+            }}>
+              <Text style={{
+                ...styles.inputInfo,
+                color: 'rgba(0,0,0,0.4)',
+              }}>
                 Nombre
               </Text>
               <MaterialCommunityIcons style={styles.iconInput} name="tag-text-outline" />
               <TextInput
-                style={styles.inputField}
+                editable={false}
+                style={{
+                  ...styles.inputField,
+                  color: 'rgba(0,0,0,0.4)',
+                }}
                 keyboardType="default"
                 selectionColor="lightgrey"
                 autoCapitalize="none"
@@ -484,29 +515,29 @@ export const NewBeer = ({ ...props }: DrawerContentComponentProps) => {
               />
             </View>
           </View>
+
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => navigation.goBack()}
+              style={styles.cancelForm}
+            >
+              <Text style={styles.buttonsText}>Cancelar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={onSubmitForm}
+              style={styles.submitForm}
+            >
+              <Text style={styles.buttonsText}>Actualizar</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
 
         {isLoading
-          ?
-          <LoadingScreen />
-          : (
-            <>
-              <DrawerToggleButton {...props} />
-
-              <TouchableOpacity
-                activeOpacity={0.2}
-                onPress={onSubmitForm}
-                style={styles.submit}
-              >
-                <MaterialCommunityIcons
-                  size={32}
-                  color="rgba(255,255,255,1)"
-                  style={{ top: -4, }}
-                  name="check"
-                />
-              </TouchableOpacity>
-            </>
-          )
+          ? <LoadingScreen />
+          : <DrawerToggleButton {...props as unknown as DrawerContentComponentProps} />
         }
       </ImageBackground>
     </>
@@ -614,14 +645,43 @@ const styles = StyleSheet.create({
     color: 'white',
     top: -1
   },
-  submit: {
-    position: 'absolute',
-    top: 26,
-    left: 15,
+  cancelForm: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 3,
-    backgroundColor: 'rgba(0, 163, 25, 0.8)',
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 175, 0, 0.8)',
     borderRadius: 5,
-    height: 32,
+    height: 40,
     padding: 3,
-  }
+    marginBottom: 40,
+    width: 100,
+  },
+  submitForm: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 3,
+    backgroundColor: 'rgba(255, 175, 0, 0.8)',
+    borderRadius: 5,
+    height: 40,
+    padding: 3,
+    marginBottom: 40,
+    width: 100,
+  },
+  buttonsText: {
+    fontWeight: 'bold',
+    color: '#fff',
+    letterSpacing: 1.5
+  },
+  buttonsContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+  },
 });
