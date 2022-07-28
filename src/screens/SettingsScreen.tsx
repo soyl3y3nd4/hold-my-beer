@@ -27,7 +27,7 @@ export const SettingsScreen = ({ navigation }: Props) => {
       <DrawerToggleButton navigation={navigation} />
       <ScrollView contentContainerStyle={{ alignItems: 'center', flexGrow: 1 }}>
         <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)', width: '100%', paddingHorizontal: 20 }}>
-          <Text style={{ fontFamily: 'JosefinBold', fontSize: 25, color: 'white', marginTop: 26, marginBottom: 30, }}>Ajustes</Text>
+          <Text style={{ fontFamily: 'JosefinBold', fontSize: 20, color: 'white', marginTop: 26, marginBottom: 30, }}>Ajustes</Text>
 
         </View>
       </ScrollView>

@@ -619,7 +619,7 @@ const styles = StyleSheet.create({
     top: 26,
     left: 15,
     zIndex: 3,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: 'rgba(0, 163, 25, 0.8)',
     borderRadius: 5,
     height: 32,
     padding: 3,

@@ -6,7 +6,6 @@ import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import Tab1 from './Tab1';
-import Tab2 from './Tab2';
 import Tab3 from './Tab3';
 
 import { AuthContext } from '../context/authContext/AuthContext';
@@ -31,7 +30,6 @@ const DrawerNavigator = () => {
     >
       <Drawer.Screen name="TabDashboard" component={TabDashboard} />
       <Drawer.Screen name="Tab1" component={Tab1} />
-      <Drawer.Screen name="Tab2" component={Tab2} />
       <Drawer.Screen name="Tab3" component={Tab3} />
       <Drawer.Screen name="NewBeer" component={NewBeer} />
       <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
@@ -122,53 +120,13 @@ const MenuContent = ({ navigation, state }: DrawerContentComponentProps) => {
             onPress={() => navigation.navigate('Tab1')}
             style={styles.menuButton}
           >
-            <Icon
-              name="trending-up-outline"
-              size={23}
-              style={{ width: 30 }}
+            <MaterialIcon
+              size={30}
+              name="format-list-bulleted"
+              style={[{ width: 30, zIndex: 1 }]}
               color={state.index === 1 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'}
             />
-            <Icon
-              style={[{
-                position: 'absolute',
-                bottom: 18,
-                left: 21,
-                zIndex: 14,
-                transform: [
-                  { scaleX: -1 },
-                ],
-                fontSize: 8,
-              }]}
-              name="beer-outline"
-              size={15}
-              color={state.index === 1 ? 'rgba(226, 189, 0, 0.7)' : 'rgba(0, 0, 0, 0.3)'}
-            />
-            <Text style={[styles.menuItem, state.index === 1 ? styles.menuItemActive : null]}>Top Cervezas</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => navigation.navigate('Tab2')}
-            style={styles.menuButton}
-          >
-            <Icon name="search" size={30} color={state.index === 2 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
-            <Icon
-              style={[{
-                position: 'absolute',
-                bottom: 14,
-                left: 9,
-                zIndex: 14,
-                transform: [
-                  { scaleX: -1 },
-                  { rotate: '-35deg' }
-                ],
-                fontSize: 8,
-              }]}
-              name="beer-outline"
-              size={15}
-              color={state.index === 2 ? 'rgba(226, 189, 0, 0.7)' : 'rgba(0, 0, 0, 0.3)'}
-            />
-            <Text style={[styles.menuItem, state.index === 2 ? styles.menuItemActive : null]}>Buscar Cerveza</Text>
+            <Text style={[styles.menuItem, state.index === 1 ? styles.menuItemActive : null]}>Listado Cervezas</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -177,28 +135,30 @@ const MenuContent = ({ navigation, state }: DrawerContentComponentProps) => {
             style={styles.menuButton}
           >
             <View style={{ width: 30 }}>
-              <MaterialIcon
-                name="account-tie"
+              <Icon
+                name="person-outline"
+                size={30}
+                color={state.index === 2 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'}
                 style={[{ position: 'absolute', bottom: -10, left: 0, zIndex: 14, fontSize: 25 }]}
-                color={state.index === 3 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'}
               />
               <Icon
                 style={[{
                   position: 'absolute',
-                  bottom: 0,
+                  bottom: -1,
                   left: 18,
                   zIndex: 14,
                   transform: [
-                    { scaleX: -1 }
+                    { scaleX: -1 },
+                    { rotateZ: '35deg' },
                   ],
                   fontSize: 12
                 }]}
                 name="beer-outline"
                 size={15}
-                color={state.index === 3 ? 'rgba(226, 189, 0, 0.8)' : 'rgba(0, 0, 0, 0.3)'}
+                color={state.index === 2 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'}
               />
             </View>
-            <Text style={[styles.menuItem, state.index === 3 ? styles.menuItemActive : null]}>Mis Cervezas</Text>
+            <Text style={[styles.menuItem, state.index === 2 ? styles.menuItemActive : null]}>Mis Cervezas</Text>
 
           </TouchableOpacity>
 
@@ -207,8 +167,8 @@ const MenuContent = ({ navigation, state }: DrawerContentComponentProps) => {
             onPress={() => navigation.navigate('NewBeer')}
             style={styles.menuButton}
           >
-            <Icon name="beer-outline" size={30} color={state.index === 4 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
-            <Text style={[styles.menuItem, state.index === 4 ? styles.menuItemActive : null]}>Nueva Cerveza</Text>
+            <Icon name="beer-outline" size={30} color={state.index === 3 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
+            <Text style={[styles.menuItem, state.index === 3 ? styles.menuItemActive : null]}>Agregar Cerveza</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -216,18 +176,19 @@ const MenuContent = ({ navigation, state }: DrawerContentComponentProps) => {
             onPress={() => navigation.navigate('ProfileScreen')}
             style={styles.menuButton}
           >
-            <Icon name="person-outline" size={30} color={state.index === 5 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
-            <Text style={[styles.menuItem, state.index === 5 ? styles.menuItemActive : null]}>Perfil</Text>
+            <Icon name="person-outline" size={30} color={state.index === 4 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
+            <Text style={[styles.menuItem, state.index === 4 ? styles.menuItemActive : null]}>Mi Usuario</Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => navigation.navigate('SettingsScreen')}
             style={styles.menuButton}
           >
-            <Icon name="settings-outline" size={30} color={state.index === 6 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
-            <Text style={[styles.menuItem, state.index === 6 ? styles.menuItemActive : null]}>Ajustes</Text>
+            <Icon name="settings-outline" size={30} color={state.index === 5 ? 'rgb(226, 189, 0)' : 'rgba(0, 0, 0, 0.5)'} />
+            <Text style={[styles.menuItem, state.index === 5 ? styles.menuItemActive : null]}>Ajustes</Text>
           </TouchableOpacity>
         </View>
+
         <View style={{ flex: 1, justifyContent: 'flex-end' }}>
           <TouchableOpacity
             activeOpacity={0.8}
@@ -238,7 +199,7 @@ const MenuContent = ({ navigation, state }: DrawerContentComponentProps) => {
             }}>
 
             <Icon name="log-in-outline" size={30} color="rgba(0, 0, 0, 0.5)" />
-            <Text style={[styles.menuItem]}>Salir</Text>
+            <Text style={[styles.menuItem]}>Logout</Text>
           </TouchableOpacity>
 
         </View>

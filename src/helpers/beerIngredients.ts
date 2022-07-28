@@ -1,109 +1,259 @@
 export const beer_ingredients = [
   {
-    id: 'water',
-    label: 'Agua',
-    value: 'Agua',
+    "id": "water",
+    "label": "Agua",
+    "value": "Agua"
   },
   {
-    id: 'hop',
-    label: 'Lúpulo',
-    value: 'Lúpulo',
+    "id": "anise",
+    "label": "Anís",
+    "value": "Anís"
   },
   {
-    id: 'malt',
-    label: 'Malta',
-    value: 'Malta',
+    "id": "rice",
+    "label": "Arroz",
+    "value": "Arroz"
   },
   {
-    id: 'malt_extract',
-    label: 'Extracto de Malta',
-    value: 'Extracto de Malta',
+    "id": "oatmeal",
+    "label": "Avena",
+    "value": "Avena"
   },
   {
-    id: 'corn',
-    label: 'Maíz',
-    value: 'Maíz',
+    "id": "white_sugar",
+    "label": "Azúcar Blanco",
+    "value": "Azúcar Blanco"
   },
   {
-    id: 'natural_colorant',
-    label: 'Colorante Natural',
-    value: 'Colorante Natural',
+    "id": "brown_sugar",
+    "label": "Azúcar Moreno",
+    "value": "Azúcar Moreno"
   },
   {
-    id: 'quimic_colorant',
-    label: 'Colorante Artificial',
-    value: 'Colorante Artificial',
+    "id": "coffee",
+    "label": "Café",
+    "value": "Café"
   },
   {
-    id: 'yeast',
-    label: 'Levadura',
-    value: 'Levadura',
+    "id": "weed",
+    "label": "Cáñamo",
+    "value": "Cáñamo"
   },
   {
-    id: 'barley',
-    label: 'Cebada',
-    value: 'Cebada',
+    "id": "chestnuts",
+    "label": "Castañas",
+    "value": "Castañas"
   },
   {
-    id: 'sorghum',
-    label: 'Sorgo',
-    value: 'Sorgo',
+    "id": "barley",
+    "label": "Cebada",
+    "value": "Cebada"
   },
   {
-    id: 'rice',
-    label: 'Arroz',
-    value: 'Arroz',
+    "id": "cherry",
+    "label": "Cereza",
+    "value": "Cereza"
   },
   {
-    id: 'coffee',
-    label: 'Café',
-    value: 'Café',
+    "id": "chili",
+    "label": "Chile",
+    "value": "Chile"
   },
   {
-    id: 'honey',
-    label: 'Miel',
-    value: 'Miel',
+    "id": "chocolate",
+    "label": "Chocolate",
+    "value": "Chocolate"
   },
   {
-    id: 'chili',
-    label: 'Chile',
-    value: 'Chile',
+    "id": "clove",
+    "label": "Clavo",
+    "value": "Clavo"
   },
   {
-    id: 'clove',
-    label: 'Clavo',
-    value: 'Clavo',
+    "id": "coconut",
+    "label": "Coco",
+    "value": "Coco"
   },
   {
-    id: 'rosemary',
-    label: 'Romero',
-    value: 'Romero',
+    "id": "quimic_colorant",
+    "label": "Colorante Artificial",
+    "value": "Colorante Artificial"
   },
   {
-    id: 'anise',
-    label: 'Anís',
-    value: 'Anís',
+    "id": "natural_colorant",
+    "label": "Colorante Natural",
+    "value": "Colorante Natural"
   },
   {
-    id: 'orange_peel',
-    label: 'Piel de Naranja',
-    value: 'Piel de Naranja',
+    "id": "dandelion",
+    "label": "Diente de León",
+    "value": "Diente de León"
   },
   {
-    id: 'black_pepper',
-    label: 'Pimienta Negra',
-    value: 'Pimienta Negra',
+    "id": "malt_extract",
+    "label": "Extracto de Malta",
+    "value": "Extracto de Malta"
   },
   {
-    id: 'tequila',
-    label: 'Tequila',
-    value: 'Tequila',
+    "id": "raspberry",
+    "label": "Frambuesa",
+    "value": "Frambuesa"
   },
   {
-    id: 'gin',
-    label: 'Ginebra',
-    value: 'Ginebra',
+    "id": "strawberry",
+    "label": "Fresa",
+    "value": "Fresa"
   },
+  {
+    "id": "gin",
+    "label": "Ginebra",
+    "value": "Ginebra"
+  },
+  {
+    "id": "incense",
+    "label": "Incienso",
+    "value": "Incienso"
+  },
+  {
+    "id": "yeast",
+    "label": "Levadura",
+    "value": "Levadura"
+  },
+  {
+    "id": "hop",
+    "label": "Lúpulo",
+    "value": "Lúpulo"
+  },
+  {
+    "id": "corn",
+    "label": "Maíz",
+    "value": "Maíz"
+  },
+  {
+    "id": "malt",
+    "label": "Malta",
+    "value": "Malta"
+  },
+  {
+    "id": "malt_rice",
+    "label": "Malta de Arroz",
+    "value": "Malta de Arroz"
+  },
+  {
+    "id": "malt_barley",
+    "label": "Malta de Cebada",
+    "value": "Malta de Cebada"
+  },
+  {
+    "id": "malt_corn",
+    "label": "Malta de Maíz",
+    "value": "Malta de Maíz"
+  },
+  {
+    "id": "malt_wheat",
+    "label": "Malta de Trigo",
+    "value": "Malta de Trigo"
+  },
+  {
+    "id": "mango",
+    "label": "Mango",
+    "value": "Mango"
+  },
+  {
+    "id": "honey",
+    "label": "Miel",
+    "value": "Miel"
+  },
+  {
+    "id": "myrrh",
+    "label": "Mirra",
+    "value": "Mirra"
+  },
+  {
+    "id": "gold",
+    "label": "Oro",
+    "value": "Oro"
+  },
+  {
+    "id": "other_spices",
+    "label": "Otras Especias",
+    "value": "Otras Especias"
+  },
+  {
+    "id": "other_herbs",
+    "label": "Otras Hiervas",
+    "value": "Otras Hiervas"
+  },
+  {
+    "id": "other",
+    "label": "Otros",
+    "value": "Otros"
+  },
+  {
+    "id": "other_aditives",
+    "label": "Otros aditivos",
+    "value": "Otros aditivos"
+  },
+  {
+    "id": "cucumber",
+    "label": "Pepino",
+    "value": "Pepino"
+  },
+  {
+    "id": "orange_peel",
+    "label": "Piel de Naranja",
+    "value": "Piel de Naranja"
+  },
+  {
+    "id": "black_pepper",
+    "label": "Pimienta Negra",
+    "value": "Pimienta Negra"
+  },
+  {
+    "id": "banana",
+    "label": "Plátano",
+    "value": "Plátano"
+  },
+  {
+    "id": "pennyroyal",
+    "label": "Poleo",
+    "value": "Poleo"
+  },
+  {
+    "id": "rosemary",
+    "label": "Romero",
+    "value": "Romero"
+  },
+  {
+    "id": "sorghum",
+    "label": "Sorgo",
+    "value": "Sorgo"
+  },
+  {
+    "id": "tea",
+    "label": "Té",
+    "value": "Té"
+  },
+  {
+    "id": "tequila",
+    "label": "Tequila",
+    "value": "Tequila"
+  },
+  {
+    "id": "thyme",
+    "label": "Tomillo",
+    "value": "Tomillo"
+  },
+  {
+    "id": "wheat",
+    "label": "Trigo",
+    "value": "Trigo"
+  },
+  {
+    "id": "grape",
+    "label": "Uva",
+    "value": "Uva"
+  }
 ];
 
 export const beer_types = [

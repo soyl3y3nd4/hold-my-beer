@@ -18,13 +18,13 @@ export const DrawerToggleButton = ({ navigation, tablet }: Props) => {
         top: 26,
         right: Dimensions.get('screen').width > 500 && tablet ? 340 : 15,
         zIndex: 101,
-        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+        backgroundColor: 'rgba(249, 200, 0, 0.8)',
         borderRadius: 5,
         height: 32,
         padding: 0,
       }}
     >
-      <Icon name="menu" size={35} color="rgba(255,255,255,1)" style={{ top: -2.5, }} />
+      <Icon name="menu" size={35} color="rgba(255,255,255,0.85)" style={{ top: -2.5, }} />
     </TouchableOpacity>
   );
 };

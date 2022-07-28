@@ -61,16 +61,16 @@ export const Dashboard = ({ navigation }: Props) => {
 
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
 
-        <View style={{ flex: 1, backgroundColor: 'rgba(220, 220, 220, 0.1)', paddingHorizontal: 0, alignItems: 'center' }}>
-          <Text style={{ fontFamily: 'JosefinBold', fontSize: 25, color: 'white', marginTop: 26, marginBottom: 10, textAlign: 'center' }}>Bienvenido</Text>
+        <View style={{ flex: 1, backgroundColor: 'rgba(220, 220, 220, 0.1)', paddingHorizontal: 0 }}>
+          {/* <Text style={styles.welcomeText}>Bienvenido</Text> */}
 
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={styles.titleBold}>Total cervezas en el sistema: </Text>
+          <View style={styles.welcomeContainer}>
+            <Text style={styles.welcomeText}>Total cervezas registradas: </Text>
             <Text style={styles.info}>{beers?.length}</Text>
           </View>
 
           <View style={{ marginBottom: 15, width: '100%' }}>
-            <Text style={styles.titleBold}>La cerveza con mejor valoración: </Text>
+            <Text style={styles.titleBold}>La cerveza más valorada: </Text>
             {
               beers?.length > 0 && (
                 <FlatList
@@ -118,7 +118,7 @@ export const Dashboard = ({ navigation }: Props) => {
           </View>
 
           <View style={{ marginBottom: 15, width: '100%' }}>
-            <Text style={styles.titleBold}>Última cerveza agregada: </Text>
+            <Text style={styles.titleBold}>La última cerveza agregada: </Text>
             {
               newestBeer?.name && (
                 <FlatList
@@ -147,16 +147,26 @@ export const Dashboard = ({ navigation }: Props) => {
 };
 
 const styles = StyleSheet.create({
+  welcomeContainer: {
+    flexDirection: 'row',
+    marginVertical: 30,
+    paddingHorizontal: 15,
+  },
+  welcomeText: {
+    fontFamily: 'JosefinBold',
+    fontSize: 18,
+    color: 'white',
+  },
   titleBold: {
     fontFamily: 'JosefinBold',
-    fontSize: 14,
+    fontSize: 16,
     color: 'white',
     marginBottom: 10,
     paddingHorizontal: 15,
   },
   info: {
     fontFamily: 'JosefinRegular',
-    fontSize: 16,
+    fontSize: 18,
     color: 'rgba(255, 182, 0, 0.9)',
   }
 });
